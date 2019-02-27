@@ -24,7 +24,7 @@ namespace GoogleMapsTry3.Wpf
 				//Xamarin.Forms.Maps.WPF.MapRenderer.
 				//MapRenderer m = new MapRenderer();
 				//m.Control.ke
-				FormsMaps.Init("AIzaSyCAIDuaANxKVQoyWXlf2hU_BxGT1ldJQUg");
+				FormsMaps.Init("AIzaSyAcig5ny-nDBiorzsV9xf896QMYTHV5V50");
 
 
 				LoadApplication(new GoogleMapsTry3.App());
