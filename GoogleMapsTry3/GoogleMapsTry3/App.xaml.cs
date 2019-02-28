@@ -7,11 +7,16 @@ namespace GoogleMapsTry3
 {
 	 public partial class App : Application
 	 {
+
+		  public static double ScreenHeight;
+		  public static double ScreenWidth;
+
 		  public App()
 		  {
 				InitializeComponent();
 
-				MainPage = new MainPage();
+				//MainPage = new MainPage();
+				MainPage = new MapPage();
 		  }
 
 		  protected override void OnStart()
