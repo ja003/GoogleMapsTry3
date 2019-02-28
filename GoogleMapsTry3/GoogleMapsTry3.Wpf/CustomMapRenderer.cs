@@ -14,8 +14,10 @@ namespace GoogleMapsTry3.Wpf
 {
 	 class CustomMapRenderer : MapRenderer
 	 {
-		  Microsoft.Maps.MapControl.WPF.Map nativeMap;
+		  //Microsoft.Maps.MapControl.WPF.Map nativeMap;
 		  List<CustomPin> customPins;
+
+		  CustomCircle circle;
 
 		  protected override void OnElementChanged(ElementChangedEventArgs<Map> e)
 		  {
@@ -23,9 +25,34 @@ namespace GoogleMapsTry3.Wpf
 
 				if(e.OldElement != null)
 				{
+					 // Unsubscribe
+				}
 
-					 //nativeMap.InfoWindowClick -= OnInfoWindowClick;
+				if(e.NewElement != null)
+				{
+					 var formsMap = (CustomMap)e.NewElement;
+					 circle = formsMap.Circle;
+					 //Control.GetMapAsync(this);
 				}
 		  }
+
+		 /* protected override void Appearing()
+		  {
+				base.Appearing();
+		  }
+
+		  protected override void OnMapReady(Android.Gms.Maps.GoogleMap map)
+		  {
+				base.OnMapReady(map);
+
+				var circleOptions = new CircleOptions();
+				circleOptions.InvokeCenter(new LatLng(circle.Position.Latitude, circle.Position.Longitude));
+				circleOptions.InvokeRadius(circle.Radius);
+				circleOptions.InvokeFillColor(0X66FF0000);
+				circleOptions.InvokeStrokeColor(0X66FF0000);
+				circleOptions.InvokeStrokeWidth(0);
+
+				NativeMap.AddCircle(circleOptions);
+		  }*/
 	 }
 }

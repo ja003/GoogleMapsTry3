@@ -71,7 +71,7 @@
       <HintPath>..\..\packages\Xamarin.Forms.Maps.4.0.0.169046-pre5\lib\netstandard2.0\Xamarin.Forms.Maps.Design.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Maps.WPF, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xamarin.Forms.Maps.WPF.4.0.0.169046-pre5\lib\net45\Xamarin.Forms.Maps.WPF.dll</HintPath>
+      <HintPath>..\..\packages\Xamarin.Forms.Maps.WPF.3.5.0.169047\lib\net45\Xamarin.Forms.Maps.WPF.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Platform, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xamarin.Forms.4.0.0.169046-pre5\lib\netstandard2.0\Xamarin.Forms.Platform.dll</HintPath>

@@ -26,6 +26,8 @@ namespace GoogleMapsTry3.Droid
 
 		  CustomCircle circle;
 
+		  List<Position> shapeCoordinates;
+
 		  public CustomMapRenderer(Context context) : base(context)
 		  {
 		  }
@@ -45,6 +47,9 @@ namespace GoogleMapsTry3.Droid
 					 customPins = formsMap.CustomPins;
 
 					 circle = formsMap.Circle;
+
+					 shapeCoordinates = formsMap.ShapeCoordinates;
+
 					 Control.GetMapAsync(this);
 				}
 		  }
@@ -64,6 +69,17 @@ namespace GoogleMapsTry3.Droid
 				circleOptions.InvokeStrokeWidth(0);
 
 				NativeMap.AddCircle(circleOptions);
+
+				var polygonOptions = new PolygonOptions();
+				polygonOptions.InvokeFillColor(0x66FF0000);
+				polygonOptions.InvokeStrokeColor(0x660000FF);
+				polygonOptions.InvokeStrokeWidth(30.0f);
+
+				foreach(var position in shapeCoordinates)
+				{
+					 polygonOptions.Add(new LatLng(position.Latitude, position.Longitude));
+				}
+				NativeMap.AddPolygon(polygonOptions);
 		  }
 
 		  //...
