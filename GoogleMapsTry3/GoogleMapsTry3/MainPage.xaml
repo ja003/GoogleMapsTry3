@@ -5,7 +5,8 @@
             xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
              x:Class="GoogleMapsTry3.MainPage">
 
-    <StackLayout>
+    <StackLayout
+        BackgroundColor="Yellow">
         <!-- Place new controls here -->
         <!--<Label Text="Welcome sdfsdfsdfsdfs!" 
            HorizontalOptions="Center"
@@ -13,10 +14,9 @@
         <Label Text="HEYY"/>-->
 
         <maps:Map x:Name="myMap"
-                IsShowingUser="True"
-					 HeightRequest = "100"
-					 WidthRequest = "960"
-					 VerticalOptions="FillAndExpand"/>
+                  VerticalOptions="FillAndExpand"
+                  WidthRequest="1000"
+                  HeightRequest="100"/>
     </StackLayout>
 
 </ContentPage>

@@ -31,11 +31,20 @@ namespace GoogleMapsTry3
 
 		  protected override void OnAppearing()
 		  {
-				base.OnAppearing();
+				System.Diagnostics.Debug.WriteLine("OnAppearing");
+				System.Console.WriteLine("test");
+
+				//base.OnAppearing();
 				//myMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(0,0), Distance.FromMiles(0.3)));
 				try
 				{
-					 myMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(0, 0), Distance.FromMeters(100)));
+
+					 //myMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(0, 0), Distance.FromMeters(100)));
+					 //myMap.HeightRequest = 100;
+					 //myMap.WidthRequest = 960;
+					 //myMap.
+					 //myMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(0, 0), Distance.FromMeters(100)));
+					 //myMap.MoveToRegion(new MapSpan(new Position(0, 0), 360, 360));
 				}
 				catch(System.InvalidOperationException ex)
 				{
