@@ -23,10 +23,19 @@ namespace GoogleMapsTry3
 					 Url = "http://xamarin.com/about/"
 				};
 
+				var position = new Position(37.79752, -122.40183);
+				customMap.Circle = new CustomCircle
+				{
+					 Position = position,
+					 Radius = 1000
+				};
+
 				customMap.CustomPins = new List<CustomPin> { pin };
 				customMap.Pins.Add(pin);
-				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(
-				  new Position(37.79752, -122.40183), Distance.FromMiles(1.0)));
+				//customMap.MoveToRegion(MapSpan.FromCenterAndRadius(
+				  //new Position(37.79752, -122.40183), Distance.FromMiles(1.0)));
+				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(position, Distance.FromMiles(1.0)));
+
 
 		  }
 	 }

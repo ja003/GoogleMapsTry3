@@ -24,6 +24,8 @@ namespace GoogleMapsTry3.Droid
 	 {
 		  List<CustomPin> customPins;
 
+		  CustomCircle circle;
+
 		  public CustomMapRenderer(Context context) : base(context)
 		  {
 		  }
@@ -41,6 +43,8 @@ namespace GoogleMapsTry3.Droid
 				{
 					 var formsMap = (CustomMap)e.NewElement;
 					 customPins = formsMap.CustomPins;
+
+					 circle = formsMap.Circle;
 					 Control.GetMapAsync(this);
 				}
 		  }
@@ -48,9 +52,18 @@ namespace GoogleMapsTry3.Droid
 		  protected override void OnMapReady(GoogleMap map)
 		  {
 				base.OnMapReady(map);
-
+				
 				NativeMap.InfoWindowClick += OnInfoWindowClick;
 				NativeMap.SetInfoWindowAdapter(this);
+
+				var circleOptions = new CircleOptions();
+				circleOptions.InvokeCenter(new LatLng(circle.Position.Latitude, circle.Position.Longitude));
+				circleOptions.InvokeRadius(circle.Radius);
+				circleOptions.InvokeFillColor(0X66FF0000);
+				circleOptions.InvokeStrokeColor(0X66FF0000);
+				circleOptions.InvokeStrokeWidth(0);
+
+				NativeMap.AddCircle(circleOptions);
 		  }
 
 		  //...

@@ -8,6 +8,7 @@ namespace GoogleMapsTry3
 {
 	 public class MapPageCS : ContentPage
 	 {
+		  //alternative..
 		  public MapPageCS()
 		  {
 				var customMap = new CustomMap
