@@ -1,4 +1,5 @@
 ﻿using Plugin.Geolocator;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Xamarin.Forms;
@@ -59,8 +60,32 @@ namespace GoogleMapsTry3
 				
 				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(position, Distance.FromMiles(1.0)));*/
 
-
+				customMap.OnMapReady += OnMapReady;
 		  }
+
+		  private void OnMapReady(Action pOnMoveToLocation)
+		  {
+				MoveToMyLocation(pOnMoveToLocation);
+		  }
+
+		  private async void MoveToMyLocation(Action pOnMoveToLocation)
+		  {
+				//Log.WriteLine($"MoveToMyLocation");
+
+
+				var locator = CrossGeolocator.Current;
+				Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
+				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromMiles(1)));
+				//Debug.Write($"position = {position}");
+
+				Position userPosition = new Position(position.Latitude, position.Longitude);
+
+				customMap.GridCenter = new Position(userPosition.Latitude, userPosition.Longitude);
+
+
+				pOnMoveToLocation?.Invoke();
+		  }
+
 
 		  /*private async void MoveToMyLocation()
 		  {

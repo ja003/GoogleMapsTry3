@@ -11,6 +11,7 @@ namespace GoogleMapsTry3
 		  public CustomCircle Circle { get; set; }
 		  public List<Position> ShapeCoordinates { get; set; }
 		  public Position GridCenter { get; set; }
+		  public Action<Action> OnMapReady { get; internal set; }
 
 		  public CustomMap()
 		  {

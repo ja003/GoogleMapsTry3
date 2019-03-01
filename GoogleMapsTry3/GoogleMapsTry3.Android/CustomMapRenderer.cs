@@ -65,12 +65,14 @@ namespace GoogleMapsTry3.Droid
 
 				//NativeMap.AddCircle(circleOptions);
 
-				MoveToMyLocation();
+				//MoveToMyLocation();
+
+				customMap.OnMapReady(DrawGrid2);
 
 
 		  }
 
-		  private async void MoveToMyLocation()
+		 /* private async void MoveToMyLocation()
 		  {
 				//Log.WriteLine($"MoveToMyLocation");
 
@@ -87,10 +89,11 @@ namespace GoogleMapsTry3.Droid
 				DrawShapeCoordinates();
 				//DrawGrid();
 				DrawGrid2();
-		  }
+		  }*/
 
 		  private void DrawGrid2()
 		  {
+				System.Diagnostics.Debug.Write("@@@@@ DrawGrid2");
 				int steps = 10;
 				float stepSize = 0.01f;
 				//PolygonOptions polygonOptions = new PolygonOptions();
