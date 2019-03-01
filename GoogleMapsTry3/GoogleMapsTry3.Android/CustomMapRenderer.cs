@@ -93,16 +93,17 @@ namespace GoogleMapsTry3.Droid
 		  private void DrawGrid()
 		  {
 				int steps = 10;
-				float stepSize = 0.5f;
-				PolygonOptions polygonOptions = new PolygonOptions();
-				polygonOptions.InvokeFillColor(0x66FF0000);
-				polygonOptions.InvokeStrokeColor(0x660000FF);
-				polygonOptions.InvokeStrokeWidth(20.0f);
+				float stepSize = 0.01f;
+				//PolygonOptions polygonOptions = new PolygonOptions();
+				//polygonOptions.InvokeFillColor(0x66FF0000);
+				//polygonOptions.InvokeStrokeColor(0x660000FF);
+				//polygonOptions.InvokeStrokeWidth(20.0f);
 
 				for(int x = -steps; x < steps; x++)
 				{
 					 for(int y = -steps; y < steps; y++)
 					 {
+						  PolygonOptions polygonOptions = GetPolygon();
 						  double topLeftLatitude = gridCenter.Latitude + x * stepSize;
 						  double topLeftLongitude = gridCenter.Longitude + y * stepSize;
 
@@ -110,9 +111,21 @@ namespace GoogleMapsTry3.Droid
 						  polygonOptions.Add(new LatLng(topLeftLatitude + stepSize, topLeftLongitude));
 						  polygonOptions.Add(new LatLng(topLeftLatitude + stepSize, topLeftLongitude - stepSize));
 						  polygonOptions.Add(new LatLng(topLeftLatitude, topLeftLongitude - stepSize));
+
+						  NativeMap.AddPolygon(polygonOptions);
+
 					 }
 				}
-				NativeMap.AddPolygon(polygonOptions);
+				//NativeMap.AddPolygon(polygonOptions);
+		  }
+
+		  private PolygonOptions GetPolygon()
+		  {
+				PolygonOptions polygonOptions = new PolygonOptions();
+				polygonOptions.InvokeFillColor(0x66FF0000);
+				polygonOptions.InvokeStrokeColor(0x660000FF);
+				polygonOptions.InvokeStrokeWidth(5.0f);
+				return polygonOptions;
 		  }
 
 		  private void DrawShapeCoordinates()
