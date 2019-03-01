@@ -1,7 +1,6 @@
 ﻿using Android.Content;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
-using Android.Util;
 using Android.Widget;
 using GoogleMapsTry3;
 using GoogleMapsTry3.Droid;
@@ -21,7 +20,7 @@ namespace GoogleMapsTry3.Droid
 		  private CustomCircle circle;
 		  private List<Position> shapeCoordinates;
 		  private Position gridCenter;
-		  CustomMap customMap;
+		  private CustomMap customMap;
 
 		  public CustomMapRenderer(Context context) : base(context)
 		  {
@@ -68,13 +67,13 @@ namespace GoogleMapsTry3.Droid
 
 				MoveToMyLocation();
 
-				
+
 		  }
 
 		  private async void MoveToMyLocation()
 		  {
 				//Log.WriteLine($"MoveToMyLocation");
-				
+
 
 				var locator = CrossGeolocator.Current;
 				Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
@@ -86,7 +85,44 @@ namespace GoogleMapsTry3.Droid
 				gridCenter = new Position(userPosition.Latitude, userPosition.Longitude);
 
 				DrawShapeCoordinates();
-				DrawGrid();
+				//DrawGrid();
+				DrawGrid2();
+		  }
+
+		  private void DrawGrid2()
+		  {
+				int steps = 10;
+				float stepSize = 0.01f;
+				//PolygonOptions polygonOptions = new PolygonOptions();
+				//polygonOptions.InvokeFillColor(0x66FF0000);
+				//polygonOptions.InvokeStrokeColor(0x660000FF);
+				//polygonOptions.InvokeStrokeWidth(20.0f);
+
+
+				double longitude = gridCenter.Longitude + steps * stepSize; //top
+				double latitude = gridCenter.Latitude;
+				for(int x = -steps; x < steps; x++)
+				{
+					 PolylineOptions lineOptions = GetLine();
+					 latitude = gridCenter.Latitude + x * stepSize;
+
+					 lineOptions.Add(new LatLng(latitude, longitude));
+					 lineOptions.Add(new LatLng(latitude, longitude - 2*steps * stepSize));
+
+					 NativeMap.AddPolyline(lineOptions);
+				}
+
+				latitude = gridCenter.Latitude - steps * stepSize; //left
+				for(int y = -steps; y < steps; y++)
+				{
+					 PolylineOptions lineOptions = GetLine();
+					 longitude = gridCenter.Longitude + y * stepSize;
+
+					 lineOptions.Add(new LatLng(latitude, longitude));
+					 lineOptions.Add(new LatLng(latitude + 2*steps * stepSize, longitude ));
+
+					 NativeMap.AddPolyline(lineOptions);
+				}
 		  }
 
 
@@ -98,6 +134,7 @@ namespace GoogleMapsTry3.Droid
 				//polygonOptions.InvokeFillColor(0x66FF0000);
 				//polygonOptions.InvokeStrokeColor(0x660000FF);
 				//polygonOptions.InvokeStrokeWidth(20.0f);
+
 
 				for(int x = -steps; x < steps; x++)
 				{
@@ -117,6 +154,14 @@ namespace GoogleMapsTry3.Droid
 					 }
 				}
 				//NativeMap.AddPolygon(polygonOptions);
+		  }
+
+		  private PolylineOptions GetLine()
+		  {
+				PolylineOptions lineOptions = new PolylineOptions();
+				lineOptions.InvokeColor(0x660000FF);
+				lineOptions.InvokeWidth(5);
+				return lineOptions;
 		  }
 
 		  private PolygonOptions GetPolygon()
@@ -141,7 +186,7 @@ namespace GoogleMapsTry3.Droid
 				foreach(var position in shapeCoordinates)
 				{
 					 polygonOptions.Add(new LatLng(position.Latitude, position.Longitude));
-				}				
+				}
 
 				NativeMap.AddPolygon(polygonOptions);
 		  }
