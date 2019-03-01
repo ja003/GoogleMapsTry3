@@ -10,6 +10,7 @@ namespace GoogleMapsTry3
 		  public List<CustomPin> CustomPins { get; set; }
 		  public CustomCircle Circle { get; set; }
 		  public List<Position> ShapeCoordinates { get; set; }
+		  public Position GridCenter { get; set; }
 
 		  public CustomMap()
 		  {

@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
+﻿using Android.Content;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
+using Android.Util;
 using Android.Widget;
 using GoogleMapsTry3;
 using GoogleMapsTry3.Droid;
+using Plugin.Geolocator;
+using System;
+using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Maps.Android;
@@ -22,11 +17,11 @@ namespace GoogleMapsTry3.Droid
 {
 	 public class CustomMapRenderer : MapRenderer, GoogleMap.IInfoWindowAdapter
 	 {
-		  List<CustomPin> customPins;
-
-		  CustomCircle circle;
-
-		  List<Position> shapeCoordinates;
+		  private List<CustomPin> customPins;
+		  private CustomCircle circle;
+		  private List<Position> shapeCoordinates;
+		  private Position gridCenter;
+		  CustomMap customMap;
 
 		  public CustomMapRenderer(Context context) : base(context)
 		  {
@@ -43,12 +38,13 @@ namespace GoogleMapsTry3.Droid
 
 				if(e.NewElement != null)
 				{
-					 var formsMap = (CustomMap)e.NewElement;
-					 customPins = formsMap.CustomPins;
+					 customMap = (CustomMap)e.NewElement;
+					 customPins = customMap.CustomPins;
 
-					 circle = formsMap.Circle;
+					 circle = customMap.Circle;
 
-					 shapeCoordinates = formsMap.ShapeCoordinates;
+					 shapeCoordinates = customMap.ShapeCoordinates;
+					 gridCenter = customMap.GridCenter;
 
 					 Control.GetMapAsync(this);
 				}
@@ -57,32 +53,86 @@ namespace GoogleMapsTry3.Droid
 		  protected override void OnMapReady(GoogleMap map)
 		  {
 				base.OnMapReady(map);
-				
+
 				NativeMap.InfoWindowClick += OnInfoWindowClick;
 				NativeMap.SetInfoWindowAdapter(this);
 
-				var circleOptions = new CircleOptions();
-				circleOptions.InvokeCenter(new LatLng(circle.Position.Latitude, circle.Position.Longitude));
-				circleOptions.InvokeRadius(circle.Radius);
-				circleOptions.InvokeFillColor(0X66FF0000);
-				circleOptions.InvokeStrokeColor(0X66FF0000);
-				circleOptions.InvokeStrokeWidth(0);
+				//var circleOptions = new CircleOptions();
+				//circleOptions.InvokeCenter(new LatLng(circle.Position.Latitude, circle.Position.Longitude));
+				//circleOptions.InvokeRadius(circle.Radius);
+				//circleOptions.InvokeFillColor(0X66FF0000);
+				//circleOptions.InvokeStrokeColor(0X66FF0000);
+				//circleOptions.InvokeStrokeWidth(0);
 
-				NativeMap.AddCircle(circleOptions);
+				//NativeMap.AddCircle(circleOptions);
 
-				var polygonOptions = new PolygonOptions();
+				MoveToMyLocation();
+
+				
+		  }
+
+		  private async void MoveToMyLocation()
+		  {
+				//Log.WriteLine($"MoveToMyLocation");
+				
+
+				var locator = CrossGeolocator.Current;
+				Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
+				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromMiles(1)));
+				//Debug.Write($"position = {position}");
+
+				Position userPosition = new Position(position.Latitude, position.Longitude);
+
+				gridCenter = new Position(userPosition.Latitude, userPosition.Longitude);
+
+				DrawShapeCoordinates();
+				DrawGrid();
+		  }
+
+
+		  private void DrawGrid()
+		  {
+				int steps = 10;
+				float stepSize = 0.5f;
+				PolygonOptions polygonOptions = new PolygonOptions();
 				polygonOptions.InvokeFillColor(0x66FF0000);
 				polygonOptions.InvokeStrokeColor(0x660000FF);
-				polygonOptions.InvokeStrokeWidth(30.0f);
+				polygonOptions.InvokeStrokeWidth(20.0f);
 
-				foreach(var position in shapeCoordinates)
+				for(int x = -steps; x < steps; x++)
 				{
-					 polygonOptions.Add(new LatLng(position.Latitude, position.Longitude));
+					 for(int y = -steps; y < steps; y++)
+					 {
+						  double topLeftLatitude = gridCenter.Latitude + x * stepSize;
+						  double topLeftLongitude = gridCenter.Longitude + y * stepSize;
+
+						  polygonOptions.Add(new LatLng(topLeftLatitude, topLeftLongitude));
+						  polygonOptions.Add(new LatLng(topLeftLatitude + stepSize, topLeftLongitude));
+						  polygonOptions.Add(new LatLng(topLeftLatitude + stepSize, topLeftLongitude - stepSize));
+						  polygonOptions.Add(new LatLng(topLeftLatitude, topLeftLongitude - stepSize));
+					 }
 				}
 				NativeMap.AddPolygon(polygonOptions);
 		  }
 
-		  //...
+		  private void DrawShapeCoordinates()
+		  {
+				if(shapeCoordinates.Count == 0)
+					 return;
+
+				var polygonOptions = new PolygonOptions();
+				polygonOptions.InvokeFillColor(0x66FF0000);
+				polygonOptions.InvokeStrokeColor(0x660000FF);
+				polygonOptions.InvokeStrokeWidth(20.0f);
+
+				foreach(var position in shapeCoordinates)
+				{
+					 polygonOptions.Add(new LatLng(position.Latitude, position.Longitude));
+				}				
+
+				NativeMap.AddPolygon(polygonOptions);
+		  }
+
 
 		  protected override MarkerOptions CreateMarker(Pin pin)
 		  {
@@ -94,7 +144,7 @@ namespace GoogleMapsTry3.Droid
 				return marker;
 		  }
 
-		  void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)
+		  private void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)
 		  {
 				var customPin = GetCustomPin(e.Marker);
 				if(customPin == null)
@@ -155,7 +205,7 @@ namespace GoogleMapsTry3.Droid
 				return null;
 		  }
 
-		  CustomPin GetCustomPin(Marker annotation)
+		  private CustomPin GetCustomPin(Marker annotation)
 		  {
 				var position = new Position(annotation.Position.Latitude, annotation.Position.Longitude);
 				foreach(var pin in customPins)
