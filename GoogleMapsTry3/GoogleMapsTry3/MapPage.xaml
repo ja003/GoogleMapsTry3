@@ -3,11 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:local="clr-namespace:GoogleMapsTry3;assembly=GoogleMapsTry3"
              x:Class="GoogleMapsTry3.MapPage">
-    <ContentPage.Content>
+    <AbsoluteLayout>
         <local:CustomMap x:Name="customMap" 
                          MapType="Street" 
                          IsShowingUser="True"
                          WidthRequest="{x:Static local:App.ScreenWidth}" 
                          HeightRequest="{x:Static local:App.ScreenHeight}" />
-    </ContentPage.Content>
+
+        <StackLayout 
+            HorizontalOptions="End" 
+            VerticalOptions="End" 
+            Orientation="Horizontal"
+            BackgroundColor="Yellow">
+            <Button x:Name="btnPlus" Text="+" />
+            <Button x:Name="btnMinus" Text="-" />
+        </StackLayout>
+
+    </AbsoluteLayout>
 </ContentPage>

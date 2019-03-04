@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
@@ -7,6 +8,8 @@ namespace GoogleMapsTry3
 {
 	 public class CustomMap : Map
 	 {
+		  private const float STEP_INCREMENT = 0.001f;
+
 		  //public List<CustomPin> CustomPins { get; set; }
 		  //public CustomCircle Circle { get; set; }
 		  //public List<Position> ShapeCoordinates { get; set; }
@@ -86,6 +89,16 @@ namespace GoogleMapsTry3
 				}
 
 				return lines;
+		  }
+
+		  internal void IncreaseGridStepSize()
+		  {
+				GridStepSize += STEP_INCREMENT;
+		  }
+		  internal void DecreaseGridStepSize()
+		  {
+				GridStepSize -= STEP_INCREMENT;
+				GridStepSize = Math.Max(0, GridStepSize);
 		  }
 
 		  public event PropertyChangedEventHandler PropertyChanged;

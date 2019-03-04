@@ -192,6 +192,8 @@ namespace GoogleMapsTry3.Droid
 				if(customMap.GridLines == null)
 					 return;
 
+				NativeMap.Clear();
+
 				foreach(GridLine line in customMap.GridLines)
 				{
 					 PolylineOptions lineOptions = GetLine();

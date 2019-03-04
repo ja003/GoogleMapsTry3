@@ -52,6 +52,10 @@ namespace GoogleMapsTry3
 				//	 Radius = 1000
 				//};
 
+				btnPlus.Clicked += OnBtnPlusClicked;
+				btnMinus.Clicked += OnBtnMinusClicked;
+
+
 				//customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(37.79752, -122.40183), Distance.FromMiles(1.0)));
 
 				//MoveToMyLocation();
@@ -61,6 +65,16 @@ namespace GoogleMapsTry3
 				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(position, Distance.FromMiles(1.0)));*/
 
 				//customMap.OnMapReady += OnMapReady;
+		  }
+
+		  private void OnBtnPlusClicked(object sender, EventArgs e)
+		  {
+				customMap.IncreaseGridStepSize();
+		  }
+
+		  private void OnBtnMinusClicked(object sender, EventArgs e)
+		  {
+				customMap.DecreaseGridStepSize();
 		  }
 
 		  /*private void OnMapReady(Action pOnMoveToLocation)
