@@ -32,23 +32,46 @@
                 WidthRequest="100" />
         </StackLayout>
 
-        <StackLayout
-            VerticalOptions="End"
-            AbsoluteLayout.LayoutBounds=".5, 1, 1, .1"
-            AbsoluteLayout.LayoutFlags="All" 
-            BackgroundColor="Blue"
-            Orientation="Horizontal"
+        <Grid
+            AbsoluteLayout.LayoutBounds=".5, .95, 1, .2"
+            AbsoluteLayout.LayoutFlags="All"
+            BackgroundColor="Blue"            
             >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
             <Button
                 x:Name="btnUp"
+                Grid.Row="0"
+                Grid.Column="1"
                 BackgroundColor="Red"
                 Text="up" />
             <Button
                 x:Name="btnDown"
+                Grid.Row="1"
+                Grid.Column="1"
                 BackgroundColor="Red"
-                Text="down"
-                WidthRequest="100" />
-        </StackLayout>
+                Text="down" />
+            <Button
+                x:Name="btnLeft"
+                Grid.Row="1"
+                Grid.Column="0"
+                BackgroundColor="Red"
+                Text="left" />
+            <Button
+                x:Name="btnRight"
+                Grid.Row="1"
+                Grid.Column="2"
+                BackgroundColor="Red"
+                Text="right" />
+        </Grid>
 
         <!--<Button
             x:Name="btnInvis"
