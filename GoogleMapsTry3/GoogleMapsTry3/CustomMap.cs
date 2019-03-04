@@ -10,11 +10,26 @@ namespace GoogleMapsTry3
 	 {
 		  private const float STEP_INCREMENT = 0.001f;
 
+		  public Position GridCenter { get; set; }
+
 		  //public List<CustomPin> CustomPins { get; set; }
 		  //public CustomCircle Circle { get; set; }
 		  //public List<Position> ShapeCoordinates { get; set; }
 		  //public Action<Action> OnMapReady { get; internal set; }
 		  public List<GridLine> GridLines;
+
+		  public Position DebugPosition
+		  {
+				get
+				{
+					 return (Position)GetValue(DebugPositionProperty);
+				}
+				set
+				{
+					 SetValue(DebugPositionProperty, value);
+				}
+		  }
+		  public static BindableProperty DebugPositionProperty = BindableProperty.Create(nameof(DebugPosition), typeof(Position), typeof(CustomMap));
 
 		  public float GridStepSize
 		  {
@@ -33,12 +48,11 @@ namespace GoogleMapsTry3
 				//ShapeCoordinates = new List<Position>();
 		  }
 
-		  public Position GridCenter { get; set; }
 		  public static BindableProperty GridStepSizeProperty =
-				BindableProperty.Create(nameof(GridStepSize), typeof(float), typeof(CustomMap), null,
-					 propertyChanged: OnGridStepSizePropertyChanged);
+				BindableProperty.Create(nameof(GridStepSize), typeof(float), typeof(CustomMap));
 
-		  private static void OnGridStepSizePropertyChanged(BindableObject bindable, object oldValue, object newValue)
+
+		  /*private static void OnGridStepSizePropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		  {
 				((CustomMap)bindable).OnGridStepSizePropertyChanged((float)oldValue, (float)newValue);
 		  }
@@ -46,7 +60,7 @@ namespace GoogleMapsTry3
 		  private void OnGridStepSizePropertyChanged(float oldValue, float newValue)
 		  {
 				//GenerateGrid();
-		  }
+		  }*/
 
 		  public void GenerateGrid()
 		  {

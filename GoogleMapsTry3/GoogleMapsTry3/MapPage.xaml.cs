@@ -1,7 +1,4 @@
-﻿using Plugin.Geolocator;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Xaml;
@@ -11,62 +8,43 @@ namespace GoogleMapsTry3
 	 [XamlCompilation(XamlCompilationOptions.Compile)]
 	 public partial class MapPage : ContentPage
 	 {
+		  private const float DEBUG_POS_INCREMENT = 0.001f;
+
 		  public MapPage()
 		  {
 				InitializeComponent();
 
-				var pin = new CustomPin
-				{
-					 Type = PinType.Place,
-					 Position = new Position(37.79752, -122.40183),
-					 Label = "Xamarin San Francisco Office",
-					 Address = "394 Pacific Ave, San Francisco CA",
-					 Id = "Xamarin",
-					 Url = "http://xamarin.com/about/"
-				};
-				//customMap.CustomPins = new List<CustomPin> { pin };
-				customMap.Pins.Add(pin);
-
-				//customMap.ShapeCoordinates.Add(new Position(37.797513, -122.402058));
-				//customMap.ShapeCoordinates.Add(new Position(37.798433, -122.402256));
-				//customMap.ShapeCoordinates.Add(new Position(37.798582, -122.401071));
-				//customMap.ShapeCoordinates.Add(new Position(37.797658, -122.400888));
-
-				/*var polygonOptions = new PolygonOptions();
-				polygonOptions.InvokeFillColor(0x66FF0000);
-				polygonOptions.InvokeStrokeColor(0x660000FF);
-				polygonOptions.InvokeStrokeWidth(30.0f);
-
-				foreach(var position in shapeCoordinates)
-				{
-					 polygonOptions.Add(new LatLng(position.Latitude, position.Longitude));
-				}
-				NativeMap.AddPolygon(polygonOptions);*/
-
-
-
-				var position = new Position(37.79752, -122.40183);
-				//customMap.Circle = new CustomCircle
-				//{
-				//	 Position = position,
-				//	 Radius = 1000
-				//};
-
 				btnPlus.Clicked += OnBtnPlusClicked;
 				btnMinus.Clicked += OnBtnMinusClicked;
 
-
-				//customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(37.79752, -122.40183), Distance.FromMiles(1.0)));
-
-				//MoveToMyLocation();
-				/*
-
-				
-				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(position, Distance.FromMiles(1.0)));*/
-
-				//customMap.OnMapReady += OnMapReady;
+				btnUp.Clicked += (sender, ea) => { MoveDebugPosition(Direction.Up); };
+				btnRight.Clicked += (sender, ea) => { MoveDebugPosition(Direction.Right); };
+				btnDown.Clicked += (sender, ea) => { MoveDebugPosition(Direction.Down); };
+				btnLeft.Clicked += (sender, ea) => { MoveDebugPosition(Direction.Left); };
 		  }
 
+		  private void MoveDebugPosition(Direction direction)
+		  {
+				float latitudeIncrement = 0;
+				float longitudeIncrement = 0;
+				switch(direction)
+				{
+					 case Direction.Up:
+						  latitudeIncrement = DEBUG_POS_INCREMENT;
+						  break;
+					 case Direction.Down:
+						  latitudeIncrement = -DEBUG_POS_INCREMENT;
+						  break;
+					 case Direction.Right:
+						  longitudeIncrement = DEBUG_POS_INCREMENT;
+						  break;
+					 case Direction.Left:
+						  longitudeIncrement = -DEBUG_POS_INCREMENT;
+						  break;
+				}
+				customMap.DebugPosition = new Position(customMap.DebugPosition.Latitude + latitudeIncrement, customMap.DebugPosition.Longitude + longitudeIncrement);
+
+		  }
 
 		  private void OnBtnPlusClicked(object sender, EventArgs e)
 		  {
@@ -131,5 +109,13 @@ namespace GoogleMapsTry3
 				//customMap.ShapeCoordinates.Add(new Position(pCenter.Latitude, pCenter.Longitude - dist));
 				//customMap.ShapeCoordinates.Add(new Position(pCenter.Latitude, pCenter.Longitude + dist));
 		  }*/
+	 }
+
+	 public enum Direction
+	 {
+		  Up,
+		  Right,
+		  Down,
+		  Left
 	 }
 }

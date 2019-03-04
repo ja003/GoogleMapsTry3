@@ -19,9 +19,9 @@ namespace GoogleMapsTry3.Droid
 {
 	 public class CustomMapRenderer : MapRenderer, IOnMapReadyCallback
 	 {
-		  private List<CustomPin> customPins;
-		  private CustomCircle circle;
-		  private List<Position> shapeCoordinates;
+		  //private List<CustomPin> customPins;
+		  //private CustomCircle circle;
+		  //private List<Position> shapeCoordinates;
 		  private CustomMap customMap;
 
 		  public CustomMapRenderer(Context context) : base(context)
@@ -60,60 +60,24 @@ namespace GoogleMapsTry3.Droid
 
 				System.Diagnostics.Debug.WriteLine($"OnElementPropertyChanged {e.PropertyName}");
 
-				if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName)
-					 DrawGrid();
+				//if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName)
+				//	 DrawGrid();
+				//else if(e.PropertyName == CustomMap.DebugPositionProperty.PropertyName)
+				//	 DrawDebugPosition();
+				if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName || e.PropertyName == CustomMap.DebugPositionProperty.PropertyName)
+					 Redraw();
 		  }
-
-
-		  /*protected override void OnElementChanged(Xamarin.Forms.Platform.Android.ElementChangedEventArgs<Map> e)
-		  {
-				base.OnElementChanged(e);
-
-				if(e.OldElement != null)
-				{
-					 NativeMap.InfoWindowClick -= OnInfoWindowClick;
-				}
-
-				if(e.NewElement != null)
-				{
-					 customMap = (CustomMap)e.NewElement;
-					 customPins = customMap.CustomPins;
-
-					 circle = customMap.Circle;
-
-					 shapeCoordinates = customMap.ShapeCoordinates;
-					 gridCenter = customMap.GridCenter;
-
-					 Control.GetMapAsync(this);
-				}
-		  }*/
 
 		  bool onMapReadyCaled;
 		  protected override void OnMapReady(GoogleMap map)
 		  {
 				base.OnMapReady(map);
 
-				//NativeMap.InfoWindowClick += OnInfoWindowClick;
-				//NativeMap.SetInfoWindowAdapter(this);
-
-				//var circleOptions = new CircleOptions();
-				//circleOptions.InvokeCenter(new LatLng(circle.Position.Latitude, circle.Position.Longitude));
-				//circleOptions.InvokeRadius(circle.Radius);
-				//circleOptions.InvokeFillColor(0X66FF0000);
-				//circleOptions.InvokeStrokeColor(0X66FF0000);
-				//circleOptions.InvokeStrokeWidth(0);
-
-				//NativeMap.AddCircle(circleOptions);
-
 				if(onMapReadyCaled)
 					 return;
 				onMapReadyCaled = true;
 
 				MoveToMyLocation();
-				//if(onMapReadyInvoked)
-				//	 return;
-				//onMapReadyInvoked = true;
-				//customMap.OnMapReady.Invoke(DrawGrid2);
 
 		  }
 
@@ -121,22 +85,15 @@ namespace GoogleMapsTry3.Droid
 		  {
 				//Log.WriteLine($"MoveToMyLocation");
 
-
 				Plugin.Geolocator.Abstractions.IGeolocator locator = CrossGeolocator.Current;
-				//Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
 				Plugin.Geolocator.Abstractions.Position position = await GetCurrentPosition();
 
 				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromMiles(1)));
 				//Debug.Write($"position = {position}");
 
 				Position userPosition = new Position(position.Latitude, position.Longitude);
-
-				//gridCenter = new Position(userPosition.Latitude, userPosition.Longitude);
-
-				//DrawShapeCoordinates();
-				//DrawGrid();
-				//DrawGrid2();
 				customMap.GridCenter = userPosition;
+				customMap.DebugPosition = userPosition;
 				customMap.GridStepSize = 0.01f; //set => it invokes (should) DrawGrid
 		  }
 
@@ -182,6 +139,28 @@ namespace GoogleMapsTry3.Droid
 				return position;
 		  }
 
+		  private void Redraw()
+		  {
+				System.Diagnostics.Debug.Write("@@@@@ Redraw");
+
+				NativeMap.Clear();
+				DrawGrid();
+				DrawDebugPosition();
+		  }
+
+
+		  private void DrawDebugPosition()
+		  {
+				CircleOptions circleOptions = new CircleOptions();
+				circleOptions.InvokeCenter(new LatLng(customMap.DebugPosition.Latitude, customMap.DebugPosition.Longitude));
+				circleOptions.InvokeRadius(100);
+				circleOptions.InvokeFillColor(0X66FF0000);
+				circleOptions.InvokeStrokeColor(0X66FF0000);
+				circleOptions.InvokeStrokeWidth(0);
+
+				NativeMap.AddCircle(circleOptions);
+		  }
+
 
 		  private void DrawGrid()
 		  {
@@ -192,7 +171,7 @@ namespace GoogleMapsTry3.Droid
 				if(customMap.GridLines == null)
 					 return;
 
-				NativeMap.Clear();
+				//NativeMap.Clear();
 
 				foreach(GridLine line in customMap.GridLines)
 				{
@@ -223,144 +202,5 @@ namespace GoogleMapsTry3.Droid
 				return polygonOptions;
 		  }
 
-		  /*private void DrawShapeCoordinates()
-		  {
-				if(shapeCoordinates.Count == 0)
-					 return;
-
-				var polygonOptions = new PolygonOptions();
-				polygonOptions.InvokeFillColor(0x66FF0000);
-				polygonOptions.InvokeStrokeColor(0x660000FF);
-				polygonOptions.InvokeStrokeWidth(20.0f);
-
-				foreach(var position in shapeCoordinates)
-				{
-					 polygonOptions.Add(new LatLng(position.Latitude, position.Longitude));
-				}
-
-				NativeMap.AddPolygon(polygonOptions);
-		  }*/
-
-
-		  /*protected override MarkerOptions CreateMarker(Pin pin)
-		  {
-				var marker = new MarkerOptions();
-				marker.SetPosition(new LatLng(pin.Position.Latitude, pin.Position.Longitude));
-				marker.SetTitle(pin.Label);
-				marker.SetSnippet(pin.Address);
-				marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.pin));
-				return marker;
-		  }
-
-		  private void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)
-		  {
-				var customPin = GetCustomPin(e.Marker);
-				if(customPin == null)
-				{
-					 throw new Exception("Custom pin not found");
-				}
-
-				if(!string.IsNullOrWhiteSpace(customPin.Url))
-				{
-					 var url = Android.Net.Uri.Parse(customPin.Url);
-					 var intent = new Intent(Intent.ActionView, url);
-					 intent.AddFlags(ActivityFlags.NewTask);
-					 Android.App.Application.Context.StartActivity(intent);
-				}
-		  }
-
-		  public Android.Views.View GetInfoContents(Marker marker)
-		  {
-				var inflater = Android.App.Application.Context.GetSystemService(Context.LayoutInflaterService) as Android.Views.LayoutInflater;
-				if(inflater != null)
-				{
-					 Android.Views.View view;
-
-					 var customPin = GetCustomPin(marker);
-					 if(customPin == null)
-					 {
-						  throw new Exception("Custom pin not found");
-					 }
-
-					 if(customPin.Id.ToString() == "Xamarin")
-					 {
-						  view = inflater.Inflate(Resource.Layout.XamarinMapInfoWindow, null);
-					 }
-					 else
-					 {
-						  view = inflater.Inflate(Resource.Layout.MapInfoWindow, null);
-					 }
-
-					 var infoTitle = view.FindViewById<TextView>(Resource.Id.InfoWindowTitle);
-					 var infoSubtitle = view.FindViewById<TextView>(Resource.Id.InfoWindowSubtitle);
-
-					 if(infoTitle != null)
-					 {
-						  infoTitle.Text = marker.Title;
-					 }
-					 if(infoSubtitle != null)
-					 {
-						  infoSubtitle.Text = marker.Snippet;
-					 }
-
-					 return view;
-				}
-				return null;
-		  }*/
-
-		  //private void DrawGrid2()
-		  //{
-		  //System.Diagnostics.Debug.Write("@@@@@ DrawGrid2");
-		  //int steps = 10;
-		  //float stepSize = 0.01f;
-		  ////PolygonOptions polygonOptions = new PolygonOptions();
-		  ////polygonOptions.InvokeFillColor(0x66FF0000);
-		  ////polygonOptions.InvokeStrokeColor(0x660000FF);
-		  ////polygonOptions.InvokeStrokeWidth(20.0f);
-
-
-		  //double longitude = gridCenter.Longitude + steps * stepSize; //top
-		  //double latitude = gridCenter.Latitude;
-		  //for(int x = -steps; x < steps; x++)
-		  //{
-		  //	 PolylineOptions lineOptions = GetLine();
-		  //	 latitude = gridCenter.Latitude + x * stepSize;
-
-		  //	 lineOptions.Add(new LatLng(latitude, longitude));
-		  //	 lineOptions.Add(new LatLng(latitude, longitude - 2 * steps * stepSize));
-
-		  //	 NativeMap.AddPolyline(lineOptions);
-		  //}
-
-		  //latitude = gridCenter.Latitude - steps * stepSize; //left
-		  //for(int y = -steps; y < steps; y++)
-		  //{
-		  //	 PolylineOptions lineOptions = GetLine();
-		  //	 longitude = gridCenter.Longitude + y * stepSize;
-
-		  //	 lineOptions.Add(new LatLng(latitude, longitude));
-		  //	 lineOptions.Add(new LatLng(latitude + 2 * steps * stepSize, longitude));
-
-		  //	 NativeMap.AddPolyline(lineOptions);
-		  //}
-		  //}
-
-		  public Android.Views.View GetInfoWindow(Marker marker)
-		  {
-				return null;
-		  }
-
-		  private CustomPin GetCustomPin(Marker annotation)
-		  {
-				var position = new Position(annotation.Position.Latitude, annotation.Position.Longitude);
-				foreach(var pin in customPins)
-				{
-					 if(pin.Position == position)
-					 {
-						  return pin;
-					 }
-				}
-				return null;
-		  }
 	 }
 }

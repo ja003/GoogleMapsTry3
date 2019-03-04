@@ -35,8 +35,7 @@
         <Grid
             AbsoluteLayout.LayoutBounds=".5, .95, 1, .2"
             AbsoluteLayout.LayoutFlags="All"
-            BackgroundColor="Blue"            
-            >
+            BackgroundColor="Blue">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
