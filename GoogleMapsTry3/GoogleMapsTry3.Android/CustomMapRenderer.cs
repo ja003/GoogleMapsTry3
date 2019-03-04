@@ -1,12 +1,10 @@
 ﻿using Android.Content;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
-using Android.Widget;
 using GoogleMapsTry3;
 using GoogleMapsTry3.Droid;
 using Plugin.Geolocator;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -60,15 +58,15 @@ namespace GoogleMapsTry3.Droid
 
 				System.Diagnostics.Debug.WriteLine($"OnElementPropertyChanged {e.PropertyName}");
 
-				//if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName)
-				//	 DrawGrid();
-				//else if(e.PropertyName == CustomMap.DebugPositionProperty.PropertyName)
-				//	 DrawDebugPosition();
-				if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName || e.PropertyName == CustomMap.DebugPositionProperty.PropertyName)
-					 Redraw();
+				if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName)
+					 DrawGrid();
+				else if(e.PropertyName == CustomMap.DebugPositionProperty.PropertyName)
+					 DrawDebugPosition();
+				//if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName || e.PropertyName == CustomMap.DebugPositionProperty.PropertyName)
+				//	 Redraw();
 		  }
 
-		  bool onMapReadyCaled;
+		  private bool onMapReadyCaled;
 		  protected override void OnMapReady(GoogleMap map)
 		  {
 				base.OnMapReady(map);
@@ -139,26 +137,36 @@ namespace GoogleMapsTry3.Droid
 				return position;
 		  }
 
-		  private void Redraw()
+		  //překreslí se vše...zatím ne
+		  /*private void Redraw()
 		  {
 				System.Diagnostics.Debug.Write("@@@@@ Redraw");
 
 				NativeMap.Clear();
 				DrawGrid();
 				DrawDebugPosition();
-		  }
+		  }*/
 
+		  private CircleOptions debugPositionCircle;
 
+		  /// <summary>
+		  /// Minulí pozice zůstávají na mapě
+		  /// </summary>
 		  private void DrawDebugPosition()
 		  {
-				CircleOptions circleOptions = new CircleOptions();
-				circleOptions.InvokeCenter(new LatLng(customMap.DebugPosition.Latitude, customMap.DebugPosition.Longitude));
-				circleOptions.InvokeRadius(100);
-				circleOptions.InvokeFillColor(0X66FF0000);
-				circleOptions.InvokeStrokeColor(0X66FF0000);
-				circleOptions.InvokeStrokeWidth(0);
+				if(debugPositionCircle != null)
+				{
+					 debugPositionCircle.Dispose();
+				}
+				debugPositionCircle = new CircleOptions();
+				debugPositionCircle.InvokeCenter(new LatLng(customMap.DebugPosition.Latitude, customMap.DebugPosition.Longitude));
+				debugPositionCircle.InvokeRadius(100);
+				debugPositionCircle.InvokeFillColor(0X66FF0000);
+				debugPositionCircle.InvokeStrokeColor(0X66FF0000);
+				debugPositionCircle.InvokeStrokeWidth(0);
 
-				NativeMap.AddCircle(circleOptions);
+
+				NativeMap.AddCircle(debugPositionCircle);
 		  }
 
 
@@ -171,7 +179,8 @@ namespace GoogleMapsTry3.Droid
 				if(customMap.GridLines == null)
 					 return;
 
-				//NativeMap.Clear();
+				//smaže vše na mapě
+				NativeMap.Clear();
 
 				foreach(GridLine line in customMap.GridLines)
 				{
