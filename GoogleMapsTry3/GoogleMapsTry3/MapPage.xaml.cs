@@ -60,15 +60,15 @@ namespace GoogleMapsTry3
 				
 				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(position, Distance.FromMiles(1.0)));*/
 
-				customMap.OnMapReady += OnMapReady;
+				//customMap.OnMapReady += OnMapReady;
 		  }
 
-		  private void OnMapReady(Action pOnMoveToLocation)
+		  /*private void OnMapReady(Action pOnMoveToLocation)
 		  {
 				MoveToMyLocation(pOnMoveToLocation);
-		  }
+		  }*/
 
-		  private async void MoveToMyLocation(Action pOnMoveToLocation)
+		  /*private async void MoveToMyLocation(Action pOnMoveToLocation)
 		  {
 				//Log.WriteLine($"MoveToMyLocation");
 
@@ -84,7 +84,7 @@ namespace GoogleMapsTry3
 
 
 				pOnMoveToLocation?.Invoke();
-		  }
+		  }*/
 
 
 		  /*private async void MoveToMyLocation()

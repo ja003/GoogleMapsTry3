@@ -49,6 +49,7 @@ namespace GoogleMapsTry3.Droid
 				}
 		  }
 
+		  bool onMapReadyInvoked;
 		  protected override void OnMapReady(GoogleMap map)
 		  {
 				base.OnMapReady(map);
@@ -65,31 +66,33 @@ namespace GoogleMapsTry3.Droid
 
 				//NativeMap.AddCircle(circleOptions);
 
-				//MoveToMyLocation();
-
-				customMap.OnMapReady(DrawGrid2);
-
+				MoveToMyLocation();
+				//if(onMapReadyInvoked)
+				//	 return;
+				//onMapReadyInvoked = true;
+				//customMap.OnMapReady.Invoke(DrawGrid2);
 
 		  }
 
-		 /* private async void MoveToMyLocation()
-		  {
-				//Log.WriteLine($"MoveToMyLocation");
+		  private async void MoveToMyLocation()
+			{
+				 //Log.WriteLine($"MoveToMyLocation");
 
 
-				var locator = CrossGeolocator.Current;
-				Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
-				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromMiles(1)));
-				//Debug.Write($"position = {position}");
+				 var locator = CrossGeolocator.Current;
+				 Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
 
-				Position userPosition = new Position(position.Latitude, position.Longitude);
+				 customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromMiles(1)));
+				 //Debug.Write($"position = {position}");
 
-				gridCenter = new Position(userPosition.Latitude, userPosition.Longitude);
+				 Position userPosition = new Position(position.Latitude, position.Longitude);
 
-				DrawShapeCoordinates();
-				//DrawGrid();
-				DrawGrid2();
-		  }*/
+				 gridCenter = new Position(userPosition.Latitude, userPosition.Longitude);
+
+				 DrawShapeCoordinates();
+				 //DrawGrid();
+				 DrawGrid2();
+			}
 
 		  private void DrawGrid2()
 		  {
@@ -110,7 +113,7 @@ namespace GoogleMapsTry3.Droid
 					 latitude = gridCenter.Latitude + x * stepSize;
 
 					 lineOptions.Add(new LatLng(latitude, longitude));
-					 lineOptions.Add(new LatLng(latitude, longitude - 2*steps * stepSize));
+					 lineOptions.Add(new LatLng(latitude, longitude - 2 * steps * stepSize));
 
 					 NativeMap.AddPolyline(lineOptions);
 				}
@@ -122,7 +125,7 @@ namespace GoogleMapsTry3.Droid
 					 longitude = gridCenter.Longitude + y * stepSize;
 
 					 lineOptions.Add(new LatLng(latitude, longitude));
-					 lineOptions.Add(new LatLng(latitude + 2*steps * stepSize, longitude ));
+					 lineOptions.Add(new LatLng(latitude + 2 * steps * stepSize, longitude));
 
 					 NativeMap.AddPolyline(lineOptions);
 				}
