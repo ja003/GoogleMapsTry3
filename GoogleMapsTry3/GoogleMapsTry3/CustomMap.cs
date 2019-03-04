@@ -10,7 +10,20 @@ namespace GoogleMapsTry3
 	 {
 		  private const float STEP_INCREMENT = 0.001f;
 
-		  public Position GridCenter { get; set; }
+		  private const string GridCenterKey = "GridCenter";
+		  public Position? GridCenter
+		  {
+				get
+				{
+					 if(Application.Current.Properties.ContainsKey(GridCenterKey))
+						  return (Position)Application.Current.Properties[GridCenterKey];
+					 return null;
+				}
+				set
+				{
+					 Application.Current.Properties[GridCenterKey] = value;
+				}
+		  }
 
 		  //public List<CustomPin> CustomPins { get; set; }
 		  //public CustomCircle Circle { get; set; }
@@ -83,21 +96,26 @@ namespace GoogleMapsTry3
 
 				List<GridLine> lines = new List<GridLine>();
 
+				if(GridCenter == null)
+				{
+					 return null;
+				}
+				Position center = (Position)GridCenter;
 
-				double longitude = GridCenter.Longitude + steps * GridStepSize; //top
-				double latitude = GridCenter.Latitude;
+				double longitude = center.Longitude + steps * GridStepSize; //top
+				double latitude = center.Latitude;
 				for(int x = -steps; x < steps; x++)
 				{
-					 latitude = GridCenter.Latitude + x * GridStepSize;
+					 latitude = center.Latitude + x * GridStepSize;
 
 					 lines.Add(new GridLine(new Position(latitude, longitude), new Position(latitude, longitude - 2 * steps * GridStepSize)));
 
 				}
 
-				latitude = GridCenter.Latitude - steps * GridStepSize; //left
+				latitude = center.Latitude - steps * GridStepSize; //left
 				for(int y = -steps; y < steps; y++)
 				{
-					 longitude = GridCenter.Longitude + y * GridStepSize;
+					 longitude = center.Longitude + y * GridStepSize;
 
 					 lines.Add(new GridLine(new Position(latitude, longitude), new Position(latitude + 2 * steps * GridStepSize, longitude)));
 				}

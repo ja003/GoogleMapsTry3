@@ -90,9 +90,14 @@ namespace GoogleMapsTry3.Droid
 				//Debug.Write($"position = {position}");
 
 				Position userPosition = new Position(position.Latitude, position.Longitude);
-				customMap.GridCenter = userPosition;
+
+				if(customMap.GridCenter == null)
+				{
+					 customMap.GridCenter = userPosition;
+				}
 				customMap.DebugPosition = userPosition;
 				customMap.GridStepSize = 0.01f; //set => it invokes (should) DrawGrid
+
 		  }
 
 		  public static async Task<Plugin.Geolocator.Abstractions.Position> GetCurrentPosition()
