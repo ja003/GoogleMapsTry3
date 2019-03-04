@@ -1,23 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 xmlns:local="clr-namespace:GoogleMapsTry3;assembly=GoogleMapsTry3"
-             x:Class="GoogleMapsTry3.MapPage">
-    <AbsoluteLayout>
-        <local:CustomMap x:Name="customMap" 
-                         MapType="Street" 
-                         IsShowingUser="True"
-                         WidthRequest="{x:Static local:App.ScreenWidth}" 
-                         HeightRequest="{x:Static local:App.ScreenHeight}" />
+<ContentPage
+    x:Class="GoogleMapsTry3.MapPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:GoogleMapsTry3;assembly=GoogleMapsTry3">
+    <AbsoluteLayout
+        BackgroundColor="Green"
+        HorizontalOptions="CenterAndExpand"
+        VerticalOptions="CenterAndExpand">
+        <local:CustomMap
+            x:Name="customMap"
+            HeightRequest="{x:Static local:App.ScreenHeight}"
+            IsShowingUser="True"
+            MapType="Street"
+            WidthRequest="{x:Static local:App.ScreenWidth}" />
 
-        <StackLayout 
-            HorizontalOptions="End" 
-            VerticalOptions="End" 
+
+        <StackLayout
+            BackgroundColor="Yellow"
+            HeightRequest="100"
             Orientation="Horizontal"
-            BackgroundColor="Yellow">
-            <Button x:Name="btnPlus" Text="+" />
-            <Button x:Name="btnMinus" Text="-" />
+            WidthRequest="200">
+            <Button
+                x:Name="btnPlus"
+                BackgroundColor="Green"
+                Text="+" />
+            <Button
+                x:Name="btnMinus"
+                BackgroundColor="Green"
+                Text="-"
+                WidthRequest="100" />
         </StackLayout>
+
+        <StackLayout
+            VerticalOptions="End"
+            AbsoluteLayout.LayoutBounds=".5, 1, 1, .1"
+            AbsoluteLayout.LayoutFlags="All" 
+            BackgroundColor="Blue"
+            Orientation="Horizontal"
+            >
+            <Button
+                x:Name="btnUp"
+                BackgroundColor="Red"
+                Text="up" />
+            <Button
+                x:Name="btnDown"
+                BackgroundColor="Red"
+                Text="down"
+                WidthRequest="100" />
+        </StackLayout>
+
+        <!--<Button
+            x:Name="btnInvis"
+            BackgroundColor="Yellow"
+            Text="-" />
+
+        <Button
+            x:Name="btnUp"
+            BackgroundColor="White"
+            Text="up" />
+        <Button
+            x:Name="btnLeft"
+            BackgroundColor="White"
+            Text="left" />
+        <Button
+            x:Name="btnDown"
+            BackgroundColor="White"
+            Text="down" />
+        <Button
+            x:Name="btnRight"
+            BackgroundColor="White"
+            Text="right" />-->
+
 
     </AbsoluteLayout>
 </ContentPage>

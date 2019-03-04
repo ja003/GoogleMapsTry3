@@ -67,6 +67,7 @@ namespace GoogleMapsTry3
 				//customMap.OnMapReady += OnMapReady;
 		  }
 
+
 		  private void OnBtnPlusClicked(object sender, EventArgs e)
 		  {
 				customMap.IncreaseGridStepSize();
@@ -76,6 +77,7 @@ namespace GoogleMapsTry3
 		  {
 				customMap.DecreaseGridStepSize();
 		  }
+
 
 		  /*private void OnMapReady(Action pOnMoveToLocation)
 		  {
