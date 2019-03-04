@@ -7,26 +7,65 @@ using GoogleMapsTry3.Droid;
 using Plugin.Geolocator;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Maps.Android;
+using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(CustomMap), typeof(CustomMapRenderer))]
 namespace GoogleMapsTry3.Droid
 {
-	 public class CustomMapRenderer : MapRenderer, GoogleMap.IInfoWindowAdapter
+	 public class CustomMapRenderer : MapRenderer, IOnMapReadyCallback
 	 {
 		  private List<CustomPin> customPins;
 		  private CustomCircle circle;
 		  private List<Position> shapeCoordinates;
-		  private Position gridCenter;
 		  private CustomMap customMap;
 
 		  public CustomMapRenderer(Context context) : base(context)
 		  {
 		  }
 
-		  protected override void OnElementChanged(Xamarin.Forms.Platform.Android.ElementChangedEventArgs<Map> e)
+		  /// <summary>
+		  /// We override the OnElementChanged() event handler to get the desired instance. We also use it for updates.
+		  /// </summary>
+		  /// <param name="e">It contains either the NewElement or the OldElement</param>
+		  protected override void OnElementChanged(ElementChangedEventArgs<Map> e)
+		  {
+				base.OnElementChanged(e);
+
+				if(e.NewElement != null)
+				{
+					 customMap = e.NewElement as CustomMap;
+					 Control.GetMapAsync(this);
+				}
+
+				//UpdatePolyLine();
+		  }
+
+		  /// <summary>
+		  /// The on element property changed callback.
+		  /// </summary>
+		  /// <param name="sender">The sender.</param>
+		  /// <param name="e">The <see cref="PropertyChangedEventArgs"/>Instance containing the event data.</param>
+		  protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		  {
+				System.Diagnostics.Debug.WriteLine($"OnElementPropertyChanged");
+
+				base.OnElementPropertyChanged(sender, e);
+				if(this.Element == null || this.Control == null)
+					 return;
+
+				System.Diagnostics.Debug.WriteLine($"OnElementPropertyChanged {e.PropertyName}");
+
+				if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName)
+					 DrawGrid();
+		  }
+
+
+		  /*protected override void OnElementChanged(Xamarin.Forms.Platform.Android.ElementChangedEventArgs<Map> e)
 		  {
 				base.OnElementChanged(e);
 
@@ -47,15 +86,15 @@ namespace GoogleMapsTry3.Droid
 
 					 Control.GetMapAsync(this);
 				}
-		  }
+		  }*/
 
-		  bool onMapReadyInvoked;
+		  bool onMapReadyCaled;
 		  protected override void OnMapReady(GoogleMap map)
 		  {
 				base.OnMapReady(map);
 
-				NativeMap.InfoWindowClick += OnInfoWindowClick;
-				NativeMap.SetInfoWindowAdapter(this);
+				//NativeMap.InfoWindowClick += OnInfoWindowClick;
+				//NativeMap.SetInfoWindowAdapter(this);
 
 				//var circleOptions = new CircleOptions();
 				//circleOptions.InvokeCenter(new LatLng(circle.Position.Latitude, circle.Position.Longitude));
@@ -66,6 +105,10 @@ namespace GoogleMapsTry3.Droid
 
 				//NativeMap.AddCircle(circleOptions);
 
+				if(onMapReadyCaled)
+					 return;
+				onMapReadyCaled = true;
+
 				MoveToMyLocation();
 				//if(onMapReadyInvoked)
 				//	 return;
@@ -75,92 +118,91 @@ namespace GoogleMapsTry3.Droid
 		  }
 
 		  private async void MoveToMyLocation()
-			{
-				 //Log.WriteLine($"MoveToMyLocation");
-
-
-				 var locator = CrossGeolocator.Current;
-				 Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
-
-				 customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromMiles(1)));
-				 //Debug.Write($"position = {position}");
-
-				 Position userPosition = new Position(position.Latitude, position.Longitude);
-
-				 gridCenter = new Position(userPosition.Latitude, userPosition.Longitude);
-
-				 DrawShapeCoordinates();
-				 //DrawGrid();
-				 DrawGrid2();
-			}
-
-		  private void DrawGrid2()
 		  {
-				System.Diagnostics.Debug.Write("@@@@@ DrawGrid2");
-				int steps = 10;
-				float stepSize = 0.01f;
-				//PolygonOptions polygonOptions = new PolygonOptions();
-				//polygonOptions.InvokeFillColor(0x66FF0000);
-				//polygonOptions.InvokeStrokeColor(0x660000FF);
-				//polygonOptions.InvokeStrokeWidth(20.0f);
+				//Log.WriteLine($"MoveToMyLocation");
 
 
-				double longitude = gridCenter.Longitude + steps * stepSize; //top
-				double latitude = gridCenter.Latitude;
-				for(int x = -steps; x < steps; x++)
+				Plugin.Geolocator.Abstractions.IGeolocator locator = CrossGeolocator.Current;
+				//Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
+				Plugin.Geolocator.Abstractions.Position position = await GetCurrentPosition();
+
+				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromMiles(1)));
+				//Debug.Write($"position = {position}");
+
+				Position userPosition = new Position(position.Latitude, position.Longitude);
+
+				//gridCenter = new Position(userPosition.Latitude, userPosition.Longitude);
+
+				//DrawShapeCoordinates();
+				//DrawGrid();
+				//DrawGrid2();
+				customMap.GridCenter = userPosition;
+				customMap.GridStepSize = 0.01f; //set => it invokes (should) DrawGrid
+		  }
+
+		  public static async Task<Plugin.Geolocator.Abstractions.Position> GetCurrentPosition()
+		  {
+				Plugin.Geolocator.Abstractions.Position position = null;
+				try
 				{
-					 PolylineOptions lineOptions = GetLine();
-					 latitude = gridCenter.Latitude + x * stepSize;
+					 var locator = CrossGeolocator.Current;
+					 locator.DesiredAccuracy = 100;
 
-					 lineOptions.Add(new LatLng(latitude, longitude));
-					 lineOptions.Add(new LatLng(latitude, longitude - 2 * steps * stepSize));
+					 position = await locator.GetLastKnownLocationAsync();
 
-					 NativeMap.AddPolyline(lineOptions);
+					 if(position != null)
+					 {
+						  //got a cahched position, so let's use it.
+						  return position;
+					 }
+
+					 if(!locator.IsGeolocationAvailable || !locator.IsGeolocationEnabled)
+					 {
+						  //not available or enabled
+						  return null;
+					 }
+
+					 position = await locator.GetPositionAsync(TimeSpan.FromSeconds(20), null, true);
+
+				}
+				catch(Exception ex)
+				{
+					 //Debug.WriteLine("Unable to get location: " + ex);
 				}
 
-				latitude = gridCenter.Latitude - steps * stepSize; //left
-				for(int y = -steps; y < steps; y++)
-				{
-					 PolylineOptions lineOptions = GetLine();
-					 longitude = gridCenter.Longitude + y * stepSize;
+				if(position == null)
+					 return null;
 
-					 lineOptions.Add(new LatLng(latitude, longitude));
-					 lineOptions.Add(new LatLng(latitude + 2 * steps * stepSize, longitude));
+				var output = string.Format("Time: {0} \nLat: {1} \nLong: {2} \nAltitude: {3} \nAltitude Accuracy: {4} \nAccuracy: {5} \nHeading: {6} \nSpeed: {7}",
+						position.Timestamp, position.Latitude, position.Longitude,
+						position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed);
 
-					 NativeMap.AddPolyline(lineOptions);
-				}
+				//Debug.WriteLine(output);
+
+				return position;
 		  }
 
 
 		  private void DrawGrid()
 		  {
-				int steps = 10;
-				float stepSize = 0.01f;
-				//PolygonOptions polygonOptions = new PolygonOptions();
-				//polygonOptions.InvokeFillColor(0x66FF0000);
-				//polygonOptions.InvokeStrokeColor(0x660000FF);
-				//polygonOptions.InvokeStrokeWidth(20.0f);
+				System.Diagnostics.Debug.Write("@@@@@ DrawGrid");
 
+				customMap.GenerateGrid();
 
-				for(int x = -steps; x < steps; x++)
+				if(customMap.GridLines == null)
+					 return;
+
+				foreach(GridLine line in customMap.GridLines)
 				{
-					 for(int y = -steps; y < steps; y++)
-					 {
-						  PolygonOptions polygonOptions = GetPolygon();
-						  double topLeftLatitude = gridCenter.Latitude + x * stepSize;
-						  double topLeftLongitude = gridCenter.Longitude + y * stepSize;
+					 PolylineOptions lineOptions = GetLine();
 
-						  polygonOptions.Add(new LatLng(topLeftLatitude, topLeftLongitude));
-						  polygonOptions.Add(new LatLng(topLeftLatitude + stepSize, topLeftLongitude));
-						  polygonOptions.Add(new LatLng(topLeftLatitude + stepSize, topLeftLongitude - stepSize));
-						  polygonOptions.Add(new LatLng(topLeftLatitude, topLeftLongitude - stepSize));
+					 lineOptions.Add(new LatLng(line.start.Latitude, line.start.Longitude));
+					 lineOptions.Add(new LatLng(line.end.Latitude, line.end.Longitude));
 
-						  NativeMap.AddPolygon(polygonOptions);
-
-					 }
+					 NativeMap.AddPolyline(lineOptions);
 				}
-				//NativeMap.AddPolygon(polygonOptions);
 		  }
+
 
 		  private PolylineOptions GetLine()
 		  {
@@ -179,7 +221,7 @@ namespace GoogleMapsTry3.Droid
 				return polygonOptions;
 		  }
 
-		  private void DrawShapeCoordinates()
+		  /*private void DrawShapeCoordinates()
 		  {
 				if(shapeCoordinates.Count == 0)
 					 return;
@@ -195,10 +237,10 @@ namespace GoogleMapsTry3.Droid
 				}
 
 				NativeMap.AddPolygon(polygonOptions);
-		  }
+		  }*/
 
 
-		  protected override MarkerOptions CreateMarker(Pin pin)
+		  /*protected override MarkerOptions CreateMarker(Pin pin)
 		  {
 				var marker = new MarkerOptions();
 				marker.SetPosition(new LatLng(pin.Position.Latitude, pin.Position.Longitude));
@@ -262,7 +304,44 @@ namespace GoogleMapsTry3.Droid
 					 return view;
 				}
 				return null;
-		  }
+		  }*/
+
+		  //private void DrawGrid2()
+		  //{
+		  //System.Diagnostics.Debug.Write("@@@@@ DrawGrid2");
+		  //int steps = 10;
+		  //float stepSize = 0.01f;
+		  ////PolygonOptions polygonOptions = new PolygonOptions();
+		  ////polygonOptions.InvokeFillColor(0x66FF0000);
+		  ////polygonOptions.InvokeStrokeColor(0x660000FF);
+		  ////polygonOptions.InvokeStrokeWidth(20.0f);
+
+
+		  //double longitude = gridCenter.Longitude + steps * stepSize; //top
+		  //double latitude = gridCenter.Latitude;
+		  //for(int x = -steps; x < steps; x++)
+		  //{
+		  //	 PolylineOptions lineOptions = GetLine();
+		  //	 latitude = gridCenter.Latitude + x * stepSize;
+
+		  //	 lineOptions.Add(new LatLng(latitude, longitude));
+		  //	 lineOptions.Add(new LatLng(latitude, longitude - 2 * steps * stepSize));
+
+		  //	 NativeMap.AddPolyline(lineOptions);
+		  //}
+
+		  //latitude = gridCenter.Latitude - steps * stepSize; //left
+		  //for(int y = -steps; y < steps; y++)
+		  //{
+		  //	 PolylineOptions lineOptions = GetLine();
+		  //	 longitude = gridCenter.Longitude + y * stepSize;
+
+		  //	 lineOptions.Add(new LatLng(latitude, longitude));
+		  //	 lineOptions.Add(new LatLng(latitude + 2 * steps * stepSize, longitude));
+
+		  //	 NativeMap.AddPolyline(lineOptions);
+		  //}
+		  //}
 
 		  public Android.Views.View GetInfoWindow(Marker marker)
 		  {
