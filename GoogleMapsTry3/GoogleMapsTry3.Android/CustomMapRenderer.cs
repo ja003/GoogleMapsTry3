@@ -25,12 +25,13 @@ namespace GoogleMapsTry3.Droid
 
 		  public CustomMapRenderer(Context context) : base(context)
 		  {
-				MessagingCenter.Subscribe<CustomMap>(this, "LogPosition", OnLogPosition);
+				//MessagingCenter.Subscribe<CustomMap>(this, "LogPosition", OnLogPosition);
+				MessagingCenter.Subscribe<CustomMap, Position>(this, "LogPosition", (source, arg) => { OnLogPosition(arg); });
 		  }
 
-		  private void OnLogPosition(CustomMap obj)
+		  private void OnLogPosition(Position position)
 		  {
-				DrawLoggedPositions();
+				DrawLoggedPosition(position);
 		  }
 
 		  /// <summary>
@@ -167,29 +168,39 @@ namespace GoogleMapsTry3.Droid
 
 		  private HashSet<Tuple<int, int>> drawnPositionsIndices = new HashSet<Tuple<int, int>>();
 
-		  private void DrawLoggedPositions()
+		  private void DrawLoggedPosition(Position position)
+		  {
+				System.Diagnostics.Debug.Write($"@@@@@ DrawLoggedPosition ");
+
+				Tuple<int, int> index = customMap.GetIndexInGrid(position);
+				if(drawnPositionsIndices.Contains(index))
+					 return;
+				drawnPositionsIndices.Add(index);
+
+				PolygonOptions polygon = GetPolygon();
+
+				Tuple<Position, Position> visitedArea = customMap.GetAreaOnPosition(position);
+				Position topLeft = visitedArea.Item1;
+				Position botRight = visitedArea.Item2;
+
+				polygon.Add(new LatLng(topLeft.Latitude, topLeft.Longitude));
+				polygon.Add(new LatLng(botRight.Latitude, topLeft.Longitude));
+				polygon.Add(new LatLng(botRight.Latitude, botRight.Longitude));
+				polygon.Add(new LatLng(topLeft.Latitude, botRight.Longitude));
+
+				NativeMap.AddPolygon(polygon);
+		  }
+
+
+		  private void RedrawLoggedPositions()
 		  {
 				System.Diagnostics.Debug.Write($"@@@@@ DrawLoggedPositions {customMap.LoggedPositions.Count}");
 
+				drawnPositionsIndices.Clear();
+
 				foreach(Position position in customMap.LoggedPositions)
 				{
-					 Tuple<int, int> index = customMap.GetIndexInGrid(position);
-					 if(drawnPositionsIndices.Contains(index))
-						  continue;
-					 drawnPositionsIndices.Add(index);
-
-					 PolygonOptions polygon = GetPolygon();
-
-					 Tuple<Position, Position> visitedArea = customMap.GetAreaOnPosition(position);
-					 Position topLeft = visitedArea.Item1;
-					 Position botRight = visitedArea.Item2;
-
-					 polygon.Add(new LatLng(topLeft.Latitude, topLeft.Longitude));
-					 polygon.Add(new LatLng(botRight.Latitude, topLeft.Longitude));
-					 polygon.Add(new LatLng(botRight.Latitude, botRight.Longitude));
-					 polygon.Add(new LatLng(topLeft.Latitude, botRight.Longitude));
-
-					 NativeMap.AddPolygon(polygon);
+					 DrawLoggedPosition(position);
 				}
 		  }
 
@@ -228,7 +239,9 @@ namespace GoogleMapsTry3.Droid
 
 				//smaže vše na mapě
 				NativeMap.Clear();
-				drawnPositionsIndices.Clear();
+
+				RedrawLoggedPositions();
+				//drawnPositionsIndices.Clear();
 
 				foreach(GridLine line in customMap.GridLines)
 				{

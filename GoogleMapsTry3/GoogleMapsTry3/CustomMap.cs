@@ -53,9 +53,9 @@ namespace GoogleMapsTry3
 
 		  public void LogPosition(Position position)
 		  {
-				LoggedPositions.Clear();
+				//LoggedPositions.Clear();
 				LoggedPositions.Add(position);
-				MessagingCenter.Send(this, "LogPosition");
+				MessagingCenter.Send(this, "LogPosition", position);
 		  }
 
 
@@ -133,8 +133,9 @@ namespace GoogleMapsTry3
 		  }
 		  internal void DecreaseGridStepSize()
 		  {
-				GridStepSize -= STEP_INCREMENT;
-				GridStepSize = Math.Max(MIN_GRID_STEP_SIZE, GridStepSize);
+				float newValue = GridStepSize - STEP_INCREMENT;
+				newValue = Math.Max(MIN_GRID_STEP_SIZE, newValue);
+				GridStepSize = newValue; //calls onPropertyChanged
 		  }
 
 		  public Tuple<Position, Position> GetAreaOnPosition(Position position)
