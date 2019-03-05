@@ -44,6 +44,10 @@ namespace GoogleMapsTry3
 				}
 				customMap.DebugPosition = new Position(customMap.DebugPosition.Latitude + latitudeIncrement, customMap.DebugPosition.Longitude + longitudeIncrement);
 
+				customMap.LogPosition(customMap.DebugPosition);
+				//customMap.LoggedPositions.Log(customMap.DebugPosition);
+				//customMap.LoggedPositions = customMap.LoggedPositions;
+
 		  }
 
 		  private void OnBtnPlusClicked(object sender, EventArgs e)

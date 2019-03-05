@@ -24,6 +24,12 @@ namespace GoogleMapsTry3.Droid
 
 		  public CustomMapRenderer(Context context) : base(context)
 		  {
+				MessagingCenter.Subscribe<CustomMap>(this, "LogPosition", OnLogPosition);
+		  }
+
+		  private void OnLogPosition(CustomMap obj)
+		  {
+				DrawLoggedPositions();
 		  }
 
 		  /// <summary>
@@ -50,20 +56,51 @@ namespace GoogleMapsTry3.Droid
 		  /// <param name="e">The <see cref="PropertyChangedEventArgs"/>Instance containing the event data.</param>
 		  protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		  {
-				System.Diagnostics.Debug.WriteLine($"OnElementPropertyChanged");
 
 				base.OnElementPropertyChanged(sender, e);
 				if(this.Element == null || this.Control == null)
 					 return;
 
-				System.Diagnostics.Debug.WriteLine($"OnElementPropertyChanged {e.PropertyName}");
+				//System.Diagnostics.Debug.WriteLine($"OnElementPropertyChanged {e.PropertyName}");
 
 				if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName)
 					 DrawGrid();
 				else if(e.PropertyName == CustomMap.DebugPositionProperty.PropertyName)
 					 DrawDebugPosition();
+				//else if(e.PropertyName == CustomMap.LoggedPositionsProperty.PropertyName)
+				//	 DrawLoggedPositions();
+
 				//if(e.PropertyName == CustomMap.GridStepSizeProperty.PropertyName || e.PropertyName == CustomMap.DebugPositionProperty.PropertyName)
 				//	 Redraw();
+		  }
+
+		  private void DrawLoggedPositions()
+		  {
+				System.Diagnostics.Debug.Write($"@@@@@ DrawLoggedPositions {customMap.LoggedPositions.Count}");
+
+				foreach(Position position in customMap.LoggedPositions)
+				{
+					 PolygonOptions polygon = GetPolygon();
+
+					 Tuple<Position, Position> visitedArea = customMap.GetAreaOnPosition(position);
+					 Position topLeft = visitedArea.Item1;
+					 Position botRight = visitedArea.Item2;
+
+					 polygon.Add(new LatLng(topLeft.Latitude, topLeft.Longitude));
+					 polygon.Add(new LatLng(botRight.Latitude, topLeft.Longitude));
+					 polygon.Add(new LatLng(botRight.Latitude, botRight.Longitude));
+					 polygon.Add(new LatLng(topLeft.Latitude, botRight.Longitude));
+					 NativeMap.AddPolygon(polygon);
+				}
+		  }
+
+		  private PolygonOptions GetPolygon()
+		  {
+				PolygonOptions polygon = new PolygonOptions();
+				polygon.InvokeFillColor(0x66FF0000);
+				polygon.InvokeStrokeColor(0x660000FF);
+				polygon.InvokeStrokeWidth(10.0f);
+				return polygon;
 		  }
 
 		  private bool onMapReadyCaled;
@@ -96,7 +133,7 @@ namespace GoogleMapsTry3.Droid
 					 customMap.GridCenter = userPosition;
 				}
 				customMap.DebugPosition = userPosition;
-				customMap.GridStepSize = 0.01f; //set => it invokes (should) DrawGrid
+				customMap.GridStepSize = CustomMap.MIN_GRID_STEP_SIZE; //set => it invokes (should) DrawGrid
 
 		  }
 
@@ -206,15 +243,6 @@ namespace GoogleMapsTry3.Droid
 				lineOptions.InvokeWidth(5);
 				return lineOptions;
 		  }
-
-		  private PolygonOptions GetPolygon()
-		  {
-				PolygonOptions polygonOptions = new PolygonOptions();
-				polygonOptions.InvokeFillColor(0x66FF0000);
-				polygonOptions.InvokeStrokeColor(0x660000FF);
-				polygonOptions.InvokeStrokeWidth(5.0f);
-				return polygonOptions;
-		  }
-
+		  
 	 }
 }
