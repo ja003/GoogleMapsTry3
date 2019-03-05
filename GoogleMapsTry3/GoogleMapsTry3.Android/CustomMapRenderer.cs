@@ -104,7 +104,7 @@ namespace GoogleMapsTry3.Droid
 
 				Position userPosition = new Position(position.Latitude, position.Longitude);
 
-				if(customMap.GridCenter == null)
+				if(!customMap.IsGridCenterDefined)
 				{
 					 customMap.GridCenter = userPosition;
 				}
@@ -241,7 +241,7 @@ namespace GoogleMapsTry3.Droid
 				}
 
 				CircleOptions gridCenterCircle = new CircleOptions();
-				gridCenterCircle.InvokeCenter(new LatLng(customMap.DebugPosition.Latitude, customMap.DebugPosition.Longitude));
+				gridCenterCircle.InvokeCenter(new LatLng(customMap.GridCenter.Latitude, customMap.GridCenter.Longitude));
 				gridCenterCircle.InvokeRadius(50);
 				gridCenterCircle.InvokeFillColor(Android.Graphics.Color.DarkSlateBlue);
 				gridCenterCircle.InvokeStrokeColor(0X66FF0000);
