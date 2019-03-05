@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Xaml;
@@ -21,6 +22,8 @@ namespace GoogleMapsTry3
 				btnRight.Clicked += (sender, ea) => { MoveDebugPosition(Direction.Right); };
 				btnDown.Clicked += (sender, ea) => { MoveDebugPosition(Direction.Down); };
 				btnLeft.Clicked += (sender, ea) => { MoveDebugPosition(Direction.Left); };
+
+
 		  }
 
 		  private void MoveDebugPosition(Direction direction)

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Xamarin.Forms.Maps;
+using SQLite;
 
 namespace GoogleMapsTry3
 {
-	 public class CustomPin : Pin
+	 public interface ISQLiteDb
 	 {
-		  public string Url { get; set; }
+		  SQLiteAsyncConnection GetConnection();
 	 }
 }

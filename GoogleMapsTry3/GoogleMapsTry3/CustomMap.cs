@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
@@ -8,6 +9,15 @@ namespace GoogleMapsTry3
 	 public class CustomMap : Map
 	 {
 		  private const float STEP_INCREMENT = 0.001f;
+
+		  private SQLiteAsyncConnection _connection;
+
+
+		  public CustomMap()
+		  {
+				_connection = DependencyService.Get<ISQLiteDb>().GetConnection();
+
+		  }
 
 		  private const string GridCenterKey = "GridCenter";
 		  public Position GridCenter
@@ -71,9 +81,6 @@ namespace GoogleMapsTry3
 				}
 		  }
 
-		  public CustomMap()
-		  {
-		  }
 
 		  public static BindableProperty GridStepSizeProperty =
 				BindableProperty.Create(nameof(GridStepSize), typeof(float), typeof(CustomMap));
