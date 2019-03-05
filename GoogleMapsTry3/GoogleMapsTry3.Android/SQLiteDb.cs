@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(SQLiteDb))]
+[assembly: Dependency(typeof(SQLiteDb))] //nutné!!!
 namespace GoogleMapsTry3.Droid
 {
 	 public class SQLiteDb : ISQLiteDb

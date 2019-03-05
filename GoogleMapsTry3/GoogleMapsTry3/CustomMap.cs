@@ -10,7 +10,9 @@ namespace GoogleMapsTry3
 	 {
 		  private const float STEP_INCREMENT = 0.001f;
 
-		  private SQLiteAsyncConnection _connection;
+		  public SQLiteAsyncConnection _connection;
+		  private List<Location> savedLocations;
+		  public Location activeLocation;
 
 		  public CustomMap()
 		  { }
@@ -19,10 +21,29 @@ namespace GoogleMapsTry3
 		  public void InitDB()
 		  {
 				_connection = DependencyService.Get<ISQLiteDb>().GetConnection();
-
 		  }
 
-		  private const string GridCenterKey = "GridCenter";
+		  public async void OnMoveToMyLocation(Position userPosition)
+		  {
+				await _connection.CreateTableAsync<Location>();
+
+				var locations = await _connection.Table<Location>().ToListAsync();
+				savedLocations = new List<Location>(locations);
+
+				activeLocation = savedLocations.Find(a => a.Name == "praha");
+
+				if(activeLocation == null)
+				{
+					 System.Diagnostics.Debug.Write("@@@@@ creating praha");
+					 activeLocation = new Location("praha", userPosition);
+					 await _connection.InsertAsync(activeLocation);
+					 //customMap.GridCenter = userPosition;
+				}
+				DebugPosition = userPosition;
+				GridStepSize = MIN_GRID_STEP_SIZE; //set => it invokes DrawGrid
+		  }
+
+		  /*private const string GridCenterKey = "GridCenter";
 		  public Position GridCenter
 		  {
 				get
@@ -39,11 +60,13 @@ namespace GoogleMapsTry3
 		  }
 
 		  public bool IsGridCenterDefined => Application.Current.Properties.ContainsKey(GridCenterKey);
+		  */
 
 		  //public List<CustomPin> CustomPins { get; set; }
 		  //public CustomCircle Circle { get; set; }
 		  //public List<Position> ShapeCoordinates { get; set; }
 		  //public Action<Action> OnMapReady { get; internal set; }
+
 		  public List<GridLine> GridLines;
 
 		  public Position DebugPosition
@@ -112,22 +135,22 @@ namespace GoogleMapsTry3
 
 				List<GridLine> lines = new List<GridLine>();
 
-				double latitude = GridCenter.Latitude;
-				double longitude = GridCenter.Longitude - steps * GridStepSize; //left
-																									 //lines from left to right
+				double latitude = activeLocation.Center.Latitude;
+				double longitude = activeLocation.Center.Longitude - steps * GridStepSize; //left
+																													//lines from left to right
 				for(int y = -steps; y < steps; y++)
 				{
-					 latitude = GridCenter.Latitude + y * GridStepSize;
+					 latitude = activeLocation.Center.Latitude + y * GridStepSize;
 
 					 lines.Add(new GridLine(new Position(latitude, longitude), new Position(latitude, longitude + 2 * steps * GridStepSize)));
 
 				}
 
-				latitude = GridCenter.Latitude + steps * GridStepSize; //top
-																						 //lines from top to bottom
+				latitude = activeLocation.Center.Latitude + steps * GridStepSize; //top
+																										//lines from top to bottom
 				for(int x = -steps; x < steps; x++)
 				{
-					 longitude = GridCenter.Longitude + x * GridStepSize;
+					 longitude = activeLocation.Center.Longitude + x * GridStepSize;
 
 					 lines.Add(new GridLine(new Position(latitude, longitude), new Position(latitude - 2 * steps * GridStepSize, longitude)));
 				}
@@ -157,7 +180,7 @@ namespace GoogleMapsTry3
 		  {
 				int y = index.Item2 > 0 ? index.Item2 : index.Item2 + 1;
 				int x = index.Item1 < 0 ? index.Item1 : index.Item1 - 1;
-				Position topLeft = new Position(GridCenter.Latitude + y * GridStepSize, GridCenter.Longitude + x * GridStepSize);
+				Position topLeft = new Position(activeLocation.Center.Latitude + y * GridStepSize, activeLocation.Center.Longitude + x * GridStepSize);
 				Position botRight = new Position(topLeft.Latitude - GridStepSize, topLeft.Longitude + GridStepSize);
 				//Position botRight = new Position(GridCenter.Latitude + (index.Item2) * GridStepSize, GridCenter.Longitude + (index.Item1 - 1) * GridStepSize);
 
@@ -174,11 +197,11 @@ namespace GoogleMapsTry3
 		  {
 				//central coordinate system doesnt contain 0 index
 
-				double xDouble = (position.Longitude - GridCenter.Longitude) / GridStepSize;
+				double xDouble = (position.Longitude - activeLocation.Center.Longitude) / GridStepSize;
 				int xSign = Math.Sign(xDouble);
 				int x = (int)Math.Ceiling(Math.Abs(xDouble)) * xSign;
 
-				double yDouble = (position.Latitude - GridCenter.Latitude) / GridStepSize;
+				double yDouble = (position.Latitude - activeLocation.Center.Latitude) / GridStepSize;
 				int ySign = Math.Sign(yDouble);
 				int y = (int)Math.Ceiling(Math.Abs(yDouble)) * ySign;
 
