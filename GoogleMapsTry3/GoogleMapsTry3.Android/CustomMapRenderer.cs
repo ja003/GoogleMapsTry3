@@ -5,6 +5,7 @@ using GoogleMapsTry3;
 using GoogleMapsTry3.Droid;
 using Plugin.Geolocator;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -74,34 +75,9 @@ namespace GoogleMapsTry3.Droid
 				//	 Redraw();
 		  }
 
-		  private void DrawLoggedPositions()
-		  {
-				System.Diagnostics.Debug.Write($"@@@@@ DrawLoggedPositions {customMap.LoggedPositions.Count}");
 
-				foreach(Position position in customMap.LoggedPositions)
-				{
-					 PolygonOptions polygon = GetPolygon();
 
-					 Tuple<Position, Position> visitedArea = customMap.GetAreaOnPosition(position);
-					 Position topLeft = visitedArea.Item1;
-					 Position botRight = visitedArea.Item2;
 
-					 polygon.Add(new LatLng(topLeft.Latitude, topLeft.Longitude));
-					 polygon.Add(new LatLng(botRight.Latitude, topLeft.Longitude));
-					 polygon.Add(new LatLng(botRight.Latitude, botRight.Longitude));
-					 polygon.Add(new LatLng(topLeft.Latitude, botRight.Longitude));
-					 NativeMap.AddPolygon(polygon);
-				}
-		  }
-
-		  private PolygonOptions GetPolygon()
-		  {
-				PolygonOptions polygon = new PolygonOptions();
-				polygon.InvokeFillColor(0x66FF0000);
-				polygon.InvokeStrokeColor(0x660000FF);
-				polygon.InvokeStrokeWidth(10.0f);
-				return polygon;
-		  }
 
 		  private bool onMapReadyCaled;
 		  protected override void OnMapReady(GoogleMap map)
@@ -189,6 +165,35 @@ namespace GoogleMapsTry3.Droid
 				DrawDebugPosition();
 		  }*/
 
+		  private HashSet<Tuple<int, int>> drawnPositionsIndices = new HashSet<Tuple<int, int>>();
+
+		  private void DrawLoggedPositions()
+		  {
+				System.Diagnostics.Debug.Write($"@@@@@ DrawLoggedPositions {customMap.LoggedPositions.Count}");
+
+				foreach(Position position in customMap.LoggedPositions)
+				{
+					 Tuple<int, int> index = customMap.GetIndexInGrid(position);
+					 if(drawnPositionsIndices.Contains(index))
+						  continue;
+					 drawnPositionsIndices.Add(index);
+
+					 PolygonOptions polygon = GetPolygon();
+
+					 Tuple<Position, Position> visitedArea = customMap.GetAreaOnPosition(position);
+					 Position topLeft = visitedArea.Item1;
+					 Position botRight = visitedArea.Item2;
+
+					 polygon.Add(new LatLng(topLeft.Latitude, topLeft.Longitude));
+					 polygon.Add(new LatLng(botRight.Latitude, topLeft.Longitude));
+					 polygon.Add(new LatLng(botRight.Latitude, botRight.Longitude));
+					 polygon.Add(new LatLng(topLeft.Latitude, botRight.Longitude));
+
+					 NativeMap.AddPolygon(polygon);
+				}
+		  }
+
+
 		  private CircleOptions debugPositionCircle;
 
 		  /// <summary>
@@ -202,7 +207,7 @@ namespace GoogleMapsTry3.Droid
 				}
 				debugPositionCircle = new CircleOptions();
 				debugPositionCircle.InvokeCenter(new LatLng(customMap.DebugPosition.Latitude, customMap.DebugPosition.Longitude));
-				debugPositionCircle.InvokeRadius(100);
+				debugPositionCircle.InvokeRadius(50);
 				debugPositionCircle.InvokeFillColor(0X66FF0000);
 				debugPositionCircle.InvokeStrokeColor(0X66FF0000);
 				debugPositionCircle.InvokeStrokeWidth(0);
@@ -223,6 +228,7 @@ namespace GoogleMapsTry3.Droid
 
 				//smaže vše na mapě
 				NativeMap.Clear();
+				drawnPositionsIndices.Clear();
 
 				foreach(GridLine line in customMap.GridLines)
 				{
@@ -233,6 +239,15 @@ namespace GoogleMapsTry3.Droid
 
 					 NativeMap.AddPolyline(lineOptions);
 				}
+
+				CircleOptions gridCenterCircle = new CircleOptions();
+				gridCenterCircle.InvokeCenter(new LatLng(customMap.DebugPosition.Latitude, customMap.DebugPosition.Longitude));
+				gridCenterCircle.InvokeRadius(50);
+				gridCenterCircle.InvokeFillColor(Android.Graphics.Color.DarkSlateBlue);
+				gridCenterCircle.InvokeStrokeColor(0X66FF0000);
+				gridCenterCircle.InvokeStrokeWidth(2);
+
+				NativeMap.AddCircle(gridCenterCircle);
 		  }
 
 
@@ -243,6 +258,14 @@ namespace GoogleMapsTry3.Droid
 				lineOptions.InvokeWidth(5);
 				return lineOptions;
 		  }
-		  
+
+		  private PolygonOptions GetPolygon()
+		  {
+				PolygonOptions polygon = new PolygonOptions();
+				polygon.InvokeFillColor(0x66FF0000);
+				polygon.InvokeStrokeColor(0x660000FF);
+				polygon.InvokeStrokeWidth(10.0f);
+				return polygon;
+		  }
 	 }
 }

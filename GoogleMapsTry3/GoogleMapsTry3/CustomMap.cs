@@ -52,46 +52,11 @@ namespace GoogleMapsTry3
 
 		  public void LogPosition(Position position)
 		  {
+				LoggedPositions.Clear();
 				LoggedPositions.Add(position);
 				MessagingCenter.Send(this, "LogPosition");
 		  }
-
-		  /*public LoggedPositions LoggedPositions
-		  {
-				get
-				{
-					 return (LoggedPositions)GetValue(LoggedPositionsProperty);
-				}
-				set
-				{
-					 SetValue(LoggedPositionsProperty, value);
-				}
-		  }*/
-
-		  /*public void LogPosition(Position position)
-		  {
-				LoggedPositions = new ObservableCollection<Position>();
-				LoggedPositions.Add(position);
-				//PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LoggedPositionsProperty)));
-		  }*/
-
-		  //public static BindableProperty LoggedPositionsProperty = BindableProperty.Create(nameof(LoggedPositions), typeof(LoggedPositions), typeof(CustomMap),
-		  //null);
-
-		  /*public static void OnLoggedPositionsChanged(BindableObject bindable, object oldValue, object newValue)
-		  {
-				CustomMap bindable1 = ((CustomMap)bindable);
-				if(bindable1.PropertyChanged == null)
-					 return;
-				bindable1.PropertyChanged(bindable1, new PropertyChangedEventArgs(nameof(LoggedPositionsProperty)));
-
-				//((CustomMap)bindable).OnPolyLineAddressPointsPropertyChanged((IList<string>)oldValue, (IList<string>)newValue);
-		  }*/
-		  /*void Items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-		  {
-				//Here do what you need to do when the collection change
-		  }*/
-
+		  
 
 		  public float GridStepSize
 		  {
@@ -107,11 +72,6 @@ namespace GoogleMapsTry3
 
 		  public CustomMap()
 		  {
-				//ShapeCoordinates = new List<Position>();
-				//LoggedPositions = new ObservableCollection<Position>();
-				//LoggedPositions.CollectionChanged += Items_CollectionChanged;
-				//LoggedPositions = new LoggedPositions();
-				//LoggedPositionsProperty.
 		  }
 
 		  public static BindableProperty GridStepSizeProperty =
@@ -155,22 +115,24 @@ namespace GoogleMapsTry3
 				}
 				Position center = (Position)GridCenter;
 
-				double longitude = center.Longitude + steps * GridStepSize; //top
-				double latitude = center.Latitude;
-				for(int x = -steps; x < steps; x++)
+				double latitude = center.Latitude; 
+				double longitude = center.Longitude - steps * GridStepSize; //left
+				//lines from left to right
+				for(int y = -steps; y < steps; y++)
 				{
-					 latitude = center.Latitude + x * GridStepSize;
+					 latitude = center.Latitude + y * GridStepSize;
 
-					 lines.Add(new GridLine(new Position(latitude, longitude), new Position(latitude, longitude - 2 * steps * GridStepSize)));
+					 lines.Add(new GridLine(new Position(latitude, longitude), new Position(latitude, longitude + 2 * steps * GridStepSize)));
 
 				}
 
-				latitude = center.Latitude - steps * GridStepSize; //left
-				for(int y = -steps; y < steps; y++)
+				latitude = center.Latitude + steps * GridStepSize; //top
+				//lines from top to bottom
+				for(int x = -steps; x < steps; x++)
 				{
-					 longitude = center.Longitude + y * GridStepSize;
+					 longitude = center.Longitude + x * GridStepSize;
 
-					 lines.Add(new GridLine(new Position(latitude, longitude), new Position(latitude + 2 * steps * GridStepSize, longitude)));
+					 lines.Add(new GridLine(new Position(latitude, longitude), new Position(latitude - 2 * steps * GridStepSize, longitude)));
 				}
 
 				return lines;
@@ -199,22 +161,52 @@ namespace GoogleMapsTry3
 					 return null;
 				Position center = (Position)GridCenter;
 
-				Position topLeft = new Position(center.Latitude + index.Item1 * GridStepSize, center.Longitude + index.Item2 * GridStepSize);
-				Position botRight = new Position(center.Latitude + (index.Item1 - 1) * GridStepSize, center.Longitude + (index.Item2 - 1) * GridStepSize);
+				int y = index.Item2 > 0 ? index.Item2 : index.Item2 + 1;
+				int x = index.Item1 < 0 ? index.Item1 : index.Item1 - 1;
+				Position topLeft = new Position(center.Latitude + y * GridStepSize, center.Longitude + x * GridStepSize);
+				Position botRight = new Position(topLeft.Latitude - GridStepSize, topLeft.Longitude + GridStepSize);
+				//Position botRight = new Position(center.Latitude + (index.Item2) * GridStepSize, center.Longitude + (index.Item1 - 1) * GridStepSize);
 
 				return new Tuple<Position, Position>(topLeft, botRight);
 		  }
 
-		  private Tuple<int, int> GetIndexInGrid(Position position)
+		  /// <summary>
+		  /// Item1 = x = longitude
+		  /// Item2 = y = latitude
+		  /// </summary>
+		  /// <param name="position"></param>
+		  /// <returns></returns>
+		  public Tuple<int, int> GetIndexInGrid(Position position)
 		  {
 				if(GridCenter == null)
 					 return null;
 
 				Position center = (Position)GridCenter;
-				int x = (int)((position.Latitude - center.Latitude) / GridStepSize);
-				int y = (int)((position.Longitude - center.Longitude) / GridStepSize);
+				//central coordinate system doesnt contain 0 index
 
-				System.Diagnostics.Debug.Write($"@@@@@ GetIndexInGrid {position} = [{x},{y}]");
+				double xDouble = (position.Longitude - center.Longitude) / GridStepSize;
+				int xSign = Math.Sign(xDouble);
+				int x = (int)Math.Ceiling(Math.Abs(xDouble)) * xSign;
+
+				double yDouble = (position.Latitude - center.Latitude) / GridStepSize;
+				int ySign = Math.Sign(yDouble);
+				int y = (int)Math.Ceiling(Math.Abs(yDouble)) * ySign;
+
+
+				//if(Math.Abs(xDouble) < 1)
+				//{
+				//	 xDouble += Math.Sign(xDouble);
+				//}
+				//int x = (int)xDouble;
+
+				//double yDouble = (position.Latitude - center.Latitude) / GridStepSize;
+				//if(Math.Abs(yDouble) < 1)
+				//{
+				//	 yDouble += Math.Sign(yDouble);
+				//}
+				//int y = (int)yDouble;
+
+				System.Diagnostics.Debug.Write($"@@@@@ GetIndexInGrid {position.Latitude},{position.Longitude} = [{x},{y}]");
 
 				return new Tuple<int, int>(x, y);
 		  }

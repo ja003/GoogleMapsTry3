@@ -60,59 +60,6 @@ namespace GoogleMapsTry3
 				customMap.DecreaseGridStepSize();
 		  }
 
-
-		  /*private void OnMapReady(Action pOnMoveToLocation)
-		  {
-				MoveToMyLocation(pOnMoveToLocation);
-		  }*/
-
-		  /*private async void MoveToMyLocation(Action pOnMoveToLocation)
-		  {
-				//Log.WriteLine($"MoveToMyLocation");
-
-
-				var locator = CrossGeolocator.Current;
-				Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
-				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromMiles(1)));
-				//Debug.Write($"position = {position}");
-
-				Position userPosition = new Position(position.Latitude, position.Longitude);
-
-				customMap.GridCenter = new Position(userPosition.Latitude, userPosition.Longitude);
-
-
-				pOnMoveToLocation?.Invoke();
-		  }*/
-
-
-		  /*private async void MoveToMyLocation()
-		  {
-				Debug.Write($"MoveToMyLocation");
-				if(Device.RuntimePlatform == Device.WPF)
-				{
-					 Debug.Write($"WPF");
-					 return;
-				}
-
-				var locator = CrossGeolocator.Current;
-				Plugin.Geolocator.Abstractions.Position position = await locator.GetPositionAsync();
-				customMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromMiles(1)));
-				Debug.Write($"position = {position}");
-
-				Position userPosition = new Position(position.Latitude, position.Longitude);
-
-				SetGrid(userPosition);
-		  }
-
-		  private void SetGrid(Position pCenter)
-		  {
-				customMap.GridCenter = new Position(pCenter.Latitude, pCenter.Longitude);
-				//const int dist = 1;
-				//customMap.ShapeCoordinates.Add(new Position(pCenter.Latitude - dist, pCenter.Longitude));
-				//customMap.ShapeCoordinates.Add(new Position(pCenter.Latitude + dist, pCenter.Longitude));
-				//customMap.ShapeCoordinates.Add(new Position(pCenter.Latitude, pCenter.Longitude - dist));
-				//customMap.ShapeCoordinates.Add(new Position(pCenter.Latitude, pCenter.Longitude + dist));
-		  }*/
 	 }
 
 	 public enum Direction
