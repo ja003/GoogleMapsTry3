@@ -12,8 +12,11 @@ namespace GoogleMapsTry3
 
 		  private SQLiteAsyncConnection _connection;
 
-
 		  public CustomMap()
+		  { }
+
+
+		  public void InitDB()
 		  {
 				_connection = DependencyService.Get<ISQLiteDb>().GetConnection();
 
