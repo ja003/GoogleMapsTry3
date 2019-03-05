@@ -195,11 +195,11 @@ namespace GoogleMapsTry3.Droid
 
 		  private void RedrawLoggedPositions()
 		  {
-				System.Diagnostics.Debug.Write($"@@@@@ DrawLoggedPositions {customMap.LoggedPositions.Count}");
+				System.Diagnostics.Debug.Write($"@@@@@ DrawLoggedPositions {customMap.activeLocation.LoggedPositions.Count}");
 
 				drawnPositionsIndices.Clear();
 
-				foreach(Position position in customMap.LoggedPositions)
+				foreach(Position position in customMap.activeLocation.LoggedPositions)
 				{
 					 DrawLoggedPosition(position);
 				}

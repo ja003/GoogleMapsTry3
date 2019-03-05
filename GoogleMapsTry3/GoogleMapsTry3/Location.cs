@@ -33,14 +33,20 @@ namespace GoogleMapsTry3
 				}
 		  }
 
-		  public List<Position> LoggedPositions;
-		  public Position Center;
+		  public List<Position> LoggedPositions = new List<Position>();
+
+		  public double centerLatitude { get; set; } //bez get;set; se to neuloží do DB
+		  public double centerLongitude { get; set; }
+
+		  public Position Center => new Position(centerLatitude, centerLongitude); //Position není serializable..asi
 
 		  public Location() { }
 		  public Location(string name, Position center)
 		  {
 				Name = name;
-				Center = center;
+				centerLatitude = center.Latitude;
+				centerLongitude = center.Longitude;
+				//Center = center;
 		  }
 	 }
 }

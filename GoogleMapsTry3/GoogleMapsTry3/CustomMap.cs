@@ -85,12 +85,15 @@ namespace GoogleMapsTry3
 		  }
 		  public static BindableProperty DebugPositionProperty = BindableProperty.Create(nameof(DebugPosition), typeof(Position), typeof(CustomMap));
 
-		  public List<Position> LoggedPositions = new List<Position>();
+		  //public List<Position> LoggedPositions = new List<Position>();
 
 		  public void LogPosition(Position position)
 		  {
 				//LoggedPositions.Clear();
-				LoggedPositions.Add(position);
+				activeLocation.LoggedPositions.Add(position);
+				_connection.UpdateAsync(activeLocation);
+
+				//LoggedPositions.Add(position);
 				MessagingCenter.Send(this, "LogPosition", position);
 		  }
 
