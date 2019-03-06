@@ -6,21 +6,32 @@
     xmlns:local="clr-namespace:GoogleMapsTry3;assembly=GoogleMapsTry3">
     <AbsoluteLayout
         BackgroundColor="Green"
-        HorizontalOptions="CenterAndExpand"
-        VerticalOptions="CenterAndExpand">
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill">
 
+
+        <!--<local:CustomMap
+            x:Name="customMap"
+            HorizontalOptions="Fill"         
+            VerticalOptions="Fill"         
+            IsShowingUser="True"
+            MapType="Street"
+             />-->
         <local:CustomMap
             x:Name="customMap"
             HeightRequest="{x:Static local:App.ScreenHeight}"
+            WidthRequest="{x:Static local:App.ScreenWidth}"            
             IsShowingUser="True"
             MapType="Street"
-            WidthRequest="{x:Static local:App.ScreenWidth}" />
+             />
 
 
         <StackLayout
             Orientation="Vertical"
             BackgroundColor="Black"
-            Padding="10">
+            Padding="10"
+            HorizontalOptions="End"
+            >
             <StackLayout
                 BackgroundColor="Yellow"
                 HeightRequest="100"
