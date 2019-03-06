@@ -8,6 +8,7 @@
         BackgroundColor="Green"
         HorizontalOptions="CenterAndExpand"
         VerticalOptions="CenterAndExpand">
+
         <local:CustomMap
             x:Name="customMap"
             HeightRequest="{x:Static local:App.ScreenHeight}"
@@ -17,19 +18,34 @@
 
 
         <StackLayout
-            BackgroundColor="Yellow"
-            HeightRequest="100"
-            Orientation="Horizontal"
-            WidthRequest="200">
-            <Button
-                x:Name="btnPlus"
-                BackgroundColor="Green"
-                Text="+" />
-            <Button
-                x:Name="btnMinus"
-                BackgroundColor="Green"
-                Text="-"
-                WidthRequest="100" />
+            Orientation="Vertical"
+            BackgroundColor="Black"
+            Padding="10">
+            <StackLayout
+                BackgroundColor="Yellow"
+                HeightRequest="100"
+                Orientation="Horizontal"
+                WidthRequest="200">
+                <Button
+                    x:Name="btnPlus"
+                    BackgroundColor="Green"
+                    Text="+" />
+                <Button
+                    x:Name="btnMinus"
+                    BackgroundColor="Green"
+                    Text="-"
+                    WidthRequest="100" />
+            </StackLayout>
+
+            <Picker
+                x:Name="locationPicker"
+                BackgroundColor="Yellow"
+                SelectedIndexChanged="LocationPicker_SelectedIndexChanged">
+                <Picker.Items>
+                    <x:String>ITEM 1</x:String>
+                    <x:String>ITEM 2</x:String>
+                </Picker.Items>
+            </Picker>
         </StackLayout>
 
         <Grid

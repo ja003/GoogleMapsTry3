@@ -62,6 +62,12 @@ namespace GoogleMapsTry3
 				customMap.DecreaseGridStepSize();
 		  }
 
+		  private void LocationPicker_SelectedIndexChanged(object sender, EventArgs e)
+		  {
+				var name = locationPicker.Items[locationPicker.SelectedIndex];
+
+				DisplayAlert("Selection", name, "OK");
+		  }
 	 }
 
 	 public enum Direction
