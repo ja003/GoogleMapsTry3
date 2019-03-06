@@ -1,6 +1,8 @@
-﻿using SQLite;
+﻿using Newtonsoft.Json;
+using PCLStorage;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 
@@ -10,36 +12,67 @@ namespace GoogleMapsTry3
 	 {
 		  private const float STEP_INCREMENT = 0.001f;
 
-		  public SQLiteAsyncConnection _connection;
+		  //public SQLiteAsyncConnection _connection;
 		  private List<Location> savedLocations;
+		  string serializedLocations;
+
 		  public Location activeLocation;
+		  private IFile file;
+		  private string filename = "mapDB_01.txt";
 
 		  public CustomMap()
 		  { }
 
 
-		  public void InitDB()
+		  public async Task<bool> InitDB()
 		  {
-				_connection = DependencyService.Get<ISQLiteDb>().GetConnection();
+				//_connection = DependencyService.Get<ISQLiteDb>().GetConnection();
+
+				IFolder folder = FileSystem.Current.LocalStorage;
+				file = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
+				return true;
 		  }
+
+		  //public async static Task<string> ReadAllTextAsync(this string fileName, IFolder rootFolder = null)
+		  //{
+		  //string content = "";
+		  //IFolder folder = rootFolder ?? FileSystem.Current.LocalStorage;
+		  ////bool exist = await file.IsFileExistAsync(folder);
+		  ////if(exist == true)
+		  //{
+		  //	 IFile file = await folder.GetFileAsync(fileName);
+		  //	 content = await file.ReadAllTextAsync();
+		  //}
+		  //return content;
+		  //}
 
 		  public async void OnMoveToMyLocation(Position userPosition)
 		  {
-				await _connection.CreateTableAsync<Location>();
+				//await _connection.CreateTableAsync<Location>();
+				await InitDB();
 
-				var locations = await _connection.Table<Location>().ToListAsync();
-				savedLocations = new List<Location>(locations);
+				serializedLocations = await PCLHelper.ReadAllTextAsync(filename, null);
 
-				activeLocation = savedLocations.Find(a => a.Name == "praha");
+				savedLocations = JsonConvert.DeserializeObject<List<Location>>(serializedLocations);
+
+				//var locations = await _connection.Table<Location>().ToListAsync();
+				//savedLocations = new List<Location>(locations);
+
+				activeLocation = savedLocations?.Find(a => a.Name == "praha");
 
 				if(activeLocation == null)
 				{
 					 System.Diagnostics.Debug.Write("@@@@@ creating praha");
 					 activeLocation = new Location("praha", userPosition);
-					 await _connection.InsertAsync(activeLocation);
+					 //await _connection.InsertAsync(activeLocation);
+					 savedLocations = new List<Location> { activeLocation };
+					 serializedLocations = JsonConvert.SerializeObject(savedLocations);
+					 await PCLHelper.WriteTextAllAsync(filename, serializedLocations);
+
 					 //customMap.GridCenter = userPosition;
 				}
 				DebugPosition = userPosition;
+				LogPosition(userPosition);
 				GridStepSize = MIN_GRID_STEP_SIZE; //set => it invokes DrawGrid
 		  }
 
@@ -87,14 +120,19 @@ namespace GoogleMapsTry3
 
 		  //public List<Position> LoggedPositions = new List<Position>();
 
-		  public void LogPosition(Position position)
+		  public async void LogPosition(Position position)
 		  {
 				//LoggedPositions.Clear();
-				activeLocation.LoggedPositions.Add(position);
-				_connection.UpdateAsync(activeLocation);
+				//activeLocation.LoggedPositions.Add(position);
+				activeLocation.LogPosition(position);
+				//_connection.UpdateAsync(activeLocation);
+				serializedLocations = JsonConvert.SerializeObject(savedLocations, Formatting.Indented);
+				MessagingCenter.Send(this, "LogPosition", position);
+
+
+				await PCLHelper.WriteTextAllAsync(filename, serializedLocations);
 
 				//LoggedPositions.Add(position);
-				MessagingCenter.Send(this, "LogPosition", position);
 		  }
 
 

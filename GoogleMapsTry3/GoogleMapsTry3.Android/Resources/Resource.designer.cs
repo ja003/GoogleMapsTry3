@@ -26,6 +26,8 @@ namespace GoogleMapsTry3.Droid
 		
 		public static void UpdateIdValues()
 		{
+			global::PCLStorage.Resource.String.ApplicationName = global::GoogleMapsTry3.Droid.Resource.String.ApplicationName;
+			global::PCLStorage.Resource.String.Hello = global::GoogleMapsTry3.Droid.Resource.String.Hello;
 			global::Xamarin.Forms.Platform.Android.Resource.Animation.abc_fade_in = global::GoogleMapsTry3.Droid.Resource.Animation.abc_fade_in;
 			global::Xamarin.Forms.Platform.Android.Resource.Animation.abc_fade_out = global::GoogleMapsTry3.Droid.Resource.Animation.abc_fade_out;
 			global::Xamarin.Forms.Platform.Android.Resource.Animation.abc_grow_fade_in_from_bottom = global::GoogleMapsTry3.Droid.Resource.Animation.abc_grow_fade_in_from_bottom;
@@ -6264,6 +6266,12 @@ namespace GoogleMapsTry3.Droid
 		
 		public partial class String
 		{
+			
+			// aapt resource value: 0x7f09004e
+			public const int ApplicationName = 2131296334;
+			
+			// aapt resource value: 0x7f09004d
+			public const int Hello = 2131296333;
 			
 			// aapt resource value: 0x7f090026
 			public const int abc_action_bar_home_description = 2131296294;

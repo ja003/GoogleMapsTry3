@@ -22,7 +22,7 @@ namespace GoogleMapsTry3
 				btnDown.Clicked += (sender, ea) => { MoveDebugPosition(Direction.Down); };
 				btnLeft.Clicked += (sender, ea) => { MoveDebugPosition(Direction.Left); };
 
-				customMap.InitDB();
+				//customMap.InitDB();
 		  }
 
 		  private void MoveDebugPosition(Direction direction)
